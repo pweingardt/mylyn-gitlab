@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="de.weingardt.gitlab"
+         name="%repository.name"
+         point="org.eclipse.mylyn.tasks.ui.repositories">
+      <connectorCore
+            class="de.weingardt.gitlab.core.GitlabConnector"
+            id="de.weingardt.gitlab.core"
+            name="Gitlab Connector"/>
+      <connectorUi
+            class="de.weingardt.gitlab.ui.GitlabConnectorUI"
+            id="de.weingardt.gitlab.ui"
+            name="Gitlab Connector Ui"/>
+   </extension>
+
+</plugin>
