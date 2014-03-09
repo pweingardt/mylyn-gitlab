@@ -1,27 +1,27 @@
 package de.weingardt.gitlab.core;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import org.eclipse.mylyn.commons.net.AuthenticationType;
-import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.gitlab.api.GitlabAPI;
+import org.gitlab.api.models.GitlabProject;
+import org.gitlab.api.models.GitlabSession;
+
 
 public class GitlabConnection {
 
 	public final String host;
-	public final String project;
-	public final String privateToken;
+	public final GitlabSession session;
+	public final GitlabProject project;
+	public final GitlabAttributeMapper mapper;
 	
-	public GitlabConnection(TaskRepository repository) throws MalformedURLException {
-		URL url = new URL(repository.getUrl());
-		this.host = url.getProtocol() + "://" + url.getHost();
-		this.project = url.getPath().substring(1);
-		this.privateToken = repository.getCredentials(AuthenticationType.REPOSITORY).getPassword();
+	public GitlabConnection(String host, GitlabProject project, GitlabSession session,
+			GitlabAttributeMapper mapper) {
+		this.host = host;
+		this.project = project;
+		this.session = session;
+		this.mapper = mapper;
 	}
 	
 	public GitlabAPI api() {
-		return GitlabAPI.connect(host, privateToken);
+		return GitlabAPI.connect(host, session.getPrivateToken());
 	}
 	
 }

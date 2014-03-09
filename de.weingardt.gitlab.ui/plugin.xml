@@ -14,5 +14,11 @@
             id="de.weingardt.gitlab.ui"
             name="Gitlab Connector Ui"/>
    </extension>
+   <extension point="org.eclipse.mylyn.tasks.ui.editors">
+         <pageFactory
+            class="de.weingardt.gitlab.ui.GitlabEditorPageFactory"
+            id="de.weingardt.mtrack.ui.editor.pageFactory">
+      </pageFactory>
+   </extension>
 
 </plugin>

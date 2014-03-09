@@ -12,8 +12,18 @@ public class GitlabPlugin extends Plugin {
 	public static final String CONNECTOR_KIND = "gitlab";
 
 	public static final String ENCODING_UTF_8 = "UTF-8";
+	
+	private GitlabConnector connector;
 
-	public static GitlabPlugin getDefault() {
+	public GitlabPlugin() {
+		connector = new GitlabConnector();
+	}
+	
+	public GitlabConnector getConnector() {
+		return connector;
+	}
+	
+	public static GitlabPlugin get() {
 		return plugin;
 	}
 

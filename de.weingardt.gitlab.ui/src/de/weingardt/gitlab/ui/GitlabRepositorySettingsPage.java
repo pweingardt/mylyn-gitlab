@@ -29,6 +29,13 @@ public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage
 	}
 
 	@Override
+	public TaskRepository createTaskRepository() {
+		TaskRepository repo = super.createTaskRepository();
+		repo.setBugRepository(true);
+		return repo;
+	}
+	
+	@Override
 	protected Validator getValidator(final TaskRepository repository) {
 		return new Validator() {
 
