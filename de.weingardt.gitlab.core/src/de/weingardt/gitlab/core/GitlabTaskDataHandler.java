@@ -68,8 +68,15 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		GitlabAPI api = connection.api();
 		
 		try {
-			GitlabIssue issue = api.createIssue(connection.project.getId(), 0, 0, labels, body, title);
-			return new RepositoryResponse(ResponseKind.TASK_CREATED, "" + issue.getIid());
+			GitlabIssue issue = null;
+			if(data.isNew()) {
+				issue = api.createIssue(connection.project.getId(), 0, 0, labels, body, title);
+				return new RepositoryResponse(ResponseKind.TASK_CREATED, "" + issue.getIid());
+			} else {
+				issue = api.editIssue(connection.project.getId(), GitlabConnector.getTicketId(data.getTaskId()), 0, 
+						0, labels, body, title, GitlabIssue.Action.LEAVE);
+				return new RepositoryResponse(ResponseKind.TASK_UPDATED, "" + issue.getIid());
+			}
 		} catch (IOException e) {
 			throw new GitlabException("Unknown connection error!");
 		}
@@ -87,7 +94,6 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 	}
 
 	private TaskData downloadTaskData(TaskRepository repository, Integer ticketId) throws CoreException {
-		
 		GitlabConnection connection = connector.get(repository);
 		GitlabAttributeMapper mapper = connection.mapper;
 		try {

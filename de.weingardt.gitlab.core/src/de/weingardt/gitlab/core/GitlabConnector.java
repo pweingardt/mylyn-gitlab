@@ -15,6 +15,7 @@ import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.data.AbstractTaskDataHandler;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskDataCollector;
+import org.eclipse.mylyn.tasks.core.data.TaskMapper;
 import org.eclipse.mylyn.tasks.core.sync.ISynchronizationSession;
 import org.gitlab.api.GitlabAPI;
 import org.gitlab.api.models.GitlabProject;
@@ -29,7 +30,11 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 	private GitlabTaskDataHandler handler = new GitlabTaskDataHandler(this);
 	
 	public GitlabConnection get(TaskRepository repository) throws CoreException {
-		if(connections.containsKey(repository.getUrl())) {
+		return get(repository, false);
+	}
+	
+	private GitlabConnection get(TaskRepository repository, boolean forceUpdate) throws GitlabException {
+		if(connections.containsKey(repository.getUrl()) && !forceUpdate) {
 			return connections.get(repository.getUrl());
 		} else {
 			try {
@@ -43,7 +48,7 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 				
 				GitlabAPI api = GitlabAPI.connect(host, session.getPrivateToken());
 				
-				List<GitlabProject> projects = api.getAllProjects();
+				List<GitlabProject> projects = api.getProjects();
 				for(GitlabProject p : projects) {
 					if(p.getPathWithNamespace().equals(projectPath)) {
 						GitlabConnection connection = new GitlabConnection(host, p, session, 
@@ -115,11 +120,14 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 	@Override
 	public void updateRepositoryConfiguration(TaskRepository repository,
 			IProgressMonitor monitor) throws CoreException {
+		get(repository, true);
 	}
 
 	@Override
-	public void updateTaskFromTaskData(TaskRepository repository, ITask task,
-			TaskData taskData) {
+	public void updateTaskFromTaskData(TaskRepository repository, ITask task, TaskData data) {
+		TaskMapper mapper = new TaskMapper(data);
+		task.setCompletionDate(mapper.getCompletionDate());
+		mapper.applyTo(task);
 	}
 
 	public static void validate(TaskRepository taskRepo) throws CoreException {
