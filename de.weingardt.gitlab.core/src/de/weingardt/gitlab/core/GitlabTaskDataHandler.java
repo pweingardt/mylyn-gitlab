@@ -1,7 +1,11 @@
 package de.weingardt.gitlab.core;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -16,9 +20,11 @@ import org.eclipse.mylyn.tasks.core.data.AbstractTaskDataHandler;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMetaData;
+import org.eclipse.mylyn.tasks.core.data.TaskCommentMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.gitlab.api.GitlabAPI;
 import org.gitlab.api.models.GitlabIssue;
+import org.gitlab.api.models.GitlabNote;
 
 import de.weingardt.gitlab.core.exceptions.GitlabException;
 
@@ -71,11 +77,18 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 			GitlabIssue issue = null;
 			if(data.isNew()) {
 				issue = api.createIssue(connection.project.getId(), 0, 0, labels, body, title);
-				return new RepositoryResponse(ResponseKind.TASK_CREATED, "" + issue.getIid());
+				return new RepositoryResponse(ResponseKind.TASK_CREATED, "" + issue.getId());
 			} else {
+
+				if(root.getAttribute(TaskAttribute.COMMENT_NEW) != null && 
+						!root.getAttribute(TaskAttribute.COMMENT_NEW).getValue().equals("")) {
+					api.createNote(connection.project.getId(), GitlabConnector.getTicketId(data.getTaskId()), 
+							root.getAttribute(TaskAttribute.COMMENT_NEW).getValue());
+				}
+				
 				issue = api.editIssue(connection.project.getId(), GitlabConnector.getTicketId(data.getTaskId()), 0, 
 						0, labels, body, title, GitlabIssue.Action.LEAVE);
-				return new RepositoryResponse(ResponseKind.TASK_UPDATED, "" + issue.getIid());
+				return new RepositoryResponse(ResponseKind.TASK_UPDATED, "" + issue.getId());
 			}
 		} catch (IOException e) {
 			throw new GitlabException("Unknown connection error!");
@@ -93,37 +106,72 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		}
 	}
 
-	private TaskData downloadTaskData(TaskRepository repository, Integer ticketId) throws CoreException {
-		GitlabConnection connection = connector.get(repository);
-		GitlabAttributeMapper mapper = connection.mapper;
+	public TaskData downloadTaskData(TaskRepository repository, Integer ticketId) throws CoreException {
 		try {
-			GitlabIssue issue = connection.api().getIssue(connection.project.getId(), ticketId);
-			
-			TaskData data = new TaskData(mapper, GitlabPlugin.CONNECTOR_KIND, repository.getUrl(), "" + ticketId);
-			
-			createDefaultAttributes(data, true);
-			
-			TaskAttribute root = data.getRoot();
-			root.getAttribute(GitlabAttribute.AUTHOR.getTaskKey()).setValue(issue.getAuthor().getName());
-			root.getAttribute(GitlabAttribute.CREATED.getTaskKey()).setValue("" + issue.getCreatedAt().getTime());
-			root.getAttribute(GitlabAttribute.BODY.getTaskKey()).setValue(issue.getDescription());
-			root.getAttribute(GitlabAttribute.LABELS.getTaskKey()).setValue(StringUtils.join(issue.getLabels(), ", "));
-			root.getAttribute(GitlabAttribute.PROJECT.getTaskKey()).setValue(connection.project.getName());
-			root.getAttribute(GitlabAttribute.STATUS.getTaskKey()).setValue(issue.getState());
-			root.getAttribute(GitlabAttribute.TITLE.getTaskKey()).setValue(issue.getTitle());
-			
-			if(issue.getUpdatedAt() != null) {
-				root.getAttribute(GitlabAttribute.UPDATED.getTaskKey()).setValue("" + issue.getUpdatedAt().getTime());
-			}
-			
-			if(issue.getAssignee() != null) {
-				root.getAttribute(GitlabAttribute.ASSIGNEE.getTaskKey()).setValue(issue.getAssignee().getName());
-			}
+			GitlabConnection connection = connector.get(repository);
+			GitlabAPI api = connection.api();
+			GitlabIssue issue = api.getIssue(connection.project.getId(), ticketId);
+			List<GitlabNote> notes = api.getNotes(issue);
 
-			return data;
+			return createTaskDataFromGitlabIssue(issue, repository, notes);
 		} catch (IOException e) {
 			throw new GitlabException("Unknown connection error!");
 		}
+	}
+	
+	public TaskData createTaskDataFromGitlabIssue(GitlabIssue issue, TaskRepository repository) throws CoreException {
+		return createTaskDataFromGitlabIssue(issue, repository, new ArrayList<GitlabNote>());
+	}
+	
+	public TaskData createTaskDataFromGitlabIssue(GitlabIssue issue, TaskRepository repository, 
+			List<GitlabNote> notes) throws CoreException {
+		GitlabConnection connection = connector.get(repository);
+		TaskData data = new TaskData(connection.mapper, GitlabPlugin.CONNECTOR_KIND, repository.getUrl(), 
+				"" + issue.getId());
+		
+		createDefaultAttributes(data, true);
+		
+		TaskAttribute root = data.getRoot();
+		root.getAttribute(GitlabAttribute.AUTHOR.getTaskKey()).setValue(issue.getAuthor().getName());
+		root.getAttribute(GitlabAttribute.CREATED.getTaskKey()).setValue("" + issue.getCreatedAt().getTime());
+		root.getAttribute(GitlabAttribute.BODY.getTaskKey()).setValue(issue.getDescription());
+		root.getAttribute(GitlabAttribute.LABELS.getTaskKey()).setValue(StringUtils.join(issue.getLabels(), ", "));
+		root.getAttribute(GitlabAttribute.PROJECT.getTaskKey()).setValue(connection.project.getName());
+		root.getAttribute(GitlabAttribute.STATUS.getTaskKey()).setValue(issue.getState());
+		root.getAttribute(GitlabAttribute.TITLE.getTaskKey()).setValue(issue.getTitle());
+		
+		root.getAttribute(GitlabAttribute.IID.getTaskKey()).setValue("" + issue.getIid());
+		
+		if(issue.getUpdatedAt() != null) {
+			root.getAttribute(GitlabAttribute.UPDATED.getTaskKey()).setValue("" + issue.getUpdatedAt().getTime());
+		}
+		
+		if(issue.getState().equals(GitlabIssue.StateClosed)) {
+			root.getAttribute(GitlabAttribute.COMPLETED.getTaskKey()).setValue("" + issue.getUpdatedAt().getTime());
+		}
+		
+		if(issue.getAssignee() != null) {
+			root.getAttribute(GitlabAttribute.ASSIGNEE.getTaskKey()).setValue(issue.getAssignee().getName());
+		}
+		
+		Collections.sort(notes, new Comparator<GitlabNote>() {
+			@Override
+			public int compare(GitlabNote o1, GitlabNote o2) {
+				return o1.getCreatedAt().compareTo(o2.getCreatedAt());
+			}
+		});
+		
+		for (int i = 0; i < notes.size(); i++) {
+			TaskCommentMapper cmapper = new TaskCommentMapper();
+			cmapper.setAuthor(repository.createPerson(notes.get(i).getAuthor().getName()));
+			cmapper.setCreationDate(notes.get(i).getCreatedAt());
+			cmapper.setText(notes.get(i).getBody());
+			cmapper.setNumber(i + 1);
+			TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_COMMENT + (i + 1));
+			cmapper.applyTo(attribute);
+		}
+		
+		return data;
 	}
 	
 	private void createDefaultAttributes(TaskData data, boolean existingTask) {
@@ -134,8 +182,11 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		createAttribute(data, GitlabAttribute.PROJECT);
 
 		createAttribute(data, GitlabAttribute.CREATED);
+		createAttribute(data, GitlabAttribute.COMPLETED);
 		createAttribute(data, GitlabAttribute.UPDATED);
 		createAttribute(data, GitlabAttribute.ASSIGNEE);
+		
+		createAttribute(data, GitlabAttribute.IID);
 
 		data.getRoot().getAttribute(GitlabAttribute.CREATED.getTaskKey()).setValue("" + (new Date().getTime()));
 

@@ -7,7 +7,7 @@ import java.util.Set;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 
 public enum GitlabAttribute {
-
+	
 	BODY("Description", TaskAttribute.DESCRIPTION,
 			TaskAttribute.TYPE_LONG_RICH_TEXT),
 
@@ -25,6 +25,9 @@ public enum GitlabAttribute {
 
 	CREATED("Created", TaskAttribute.DATE_CREATION, 
 			TaskAttribute.TYPE_DATETIME, GitlabFlag.READ_ONLY, GitlabFlag.ATTRIBUTE),
+			
+	COMPLETED("Completed", TaskAttribute.DATE_COMPLETION, 
+			TaskAttribute.TYPE_DATETIME, GitlabFlag.READ_ONLY),
 
 	AUTHOR("Author", TaskAttribute.USER_REPORTER,
 			TaskAttribute.TYPE_PERSON, GitlabFlag.READ_ONLY, GitlabFlag.ATTRIBUTE),
@@ -33,8 +36,12 @@ public enum GitlabAttribute {
 			TaskAttribute.TYPE_SHORT_TEXT, GitlabFlag.READ_ONLY, GitlabFlag.ATTRIBUTE),
 
 	ASSIGNEE("Assignee", TaskAttribute.USER_ASSIGNED,
-			TaskAttribute.TYPE_PERSON, GitlabFlag.ATTRIBUTE);
+			TaskAttribute.TYPE_PERSON, GitlabFlag.ATTRIBUTE),
+	
+	IID("IID", GitlabAttributeKeys.iidKey, TaskAttribute.TYPE_INTEGER,
+			GitlabFlag.READ_ONLY);
 
+	
 	private Set<GitlabFlag> flags;
 
 	private final String prettyName;

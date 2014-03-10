@@ -1,5 +1,6 @@
 package de.weingardt.gitlab.core;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.mylyn.commons.net.AuthenticationType;
 import org.eclipse.mylyn.tasks.core.AbstractRepositoryConnector;
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
@@ -18,6 +20,7 @@ import org.eclipse.mylyn.tasks.core.data.TaskDataCollector;
 import org.eclipse.mylyn.tasks.core.data.TaskMapper;
 import org.eclipse.mylyn.tasks.core.sync.ISynchronizationSession;
 import org.gitlab.api.GitlabAPI;
+import org.gitlab.api.models.GitlabIssue;
 import org.gitlab.api.models.GitlabProject;
 import org.gitlab.api.models.GitlabSession;
 
@@ -114,7 +117,25 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 	public IStatus performQuery(TaskRepository repository, IRepositoryQuery query,
 			TaskDataCollector collector, ISynchronizationSession session,
 			IProgressMonitor monitor) {
-		return null;
+		
+		try {
+			GitlabConnection connection = get(repository);
+			GitlabAPI api = connection.api();
+			
+			GitlabIssueSearch search = new GitlabIssueSearch(query);
+			List<GitlabIssue> issues = api.getIssues(connection.project);
+			
+			for(GitlabIssue i : issues) {
+				if(search.doesMatch(i)) {
+					collector.accept(handler.createTaskDataFromGitlabIssue(i, repository, api.getNotes(i)));
+				}
+			}
+			
+			return Status.OK_STATUS;
+		} catch (CoreException | Error | IOException e) {
+		}
+		
+		return new Status(Status.ERROR, GitlabPlugin.ID_PLUGIN, "Unable to execute Query!");
 	}
 
 	@Override
