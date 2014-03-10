@@ -2,13 +2,9 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         id="de.weingardt.gitlab"
+         id="de.weingardt.gitlab.ui"
          name="%repository.name"
          point="org.eclipse.mylyn.tasks.ui.repositories">
-      <connectorCore
-            class="de.weingardt.gitlab.core.GitlabConnector"
-            id="de.weingardt.gitlab.core"
-            name="Gitlab Connector"/>
       <connectorUi
       		brandingIcon="icons/gitlab-icon.gif"
             class="de.weingardt.gitlab.ui.GitlabConnectorUI"
