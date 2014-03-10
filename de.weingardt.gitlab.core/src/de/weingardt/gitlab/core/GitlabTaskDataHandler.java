@@ -1,17 +1,19 @@
 package de.weingardt.gitlab.core;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.mylyn.commons.net.Policy;
+import org.eclipse.mylyn.tasks.core.ITask.PriorityLevel;
 import org.eclipse.mylyn.tasks.core.ITaskMapping;
 import org.eclipse.mylyn.tasks.core.RepositoryResponse;
 import org.eclipse.mylyn.tasks.core.RepositoryResponse.ResponseKind;
@@ -29,6 +31,9 @@ import org.gitlab.api.models.GitlabNote;
 import de.weingardt.gitlab.core.exceptions.GitlabException;
 
 public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
+	
+	private static Pattern priorityPattern = Pattern.compile("priority:(high|normal|low)");
+	private static Pattern typePattern = Pattern.compile("type:(bug|feature|story)");
 	
 	private GitlabConnector connector;
 	
@@ -119,15 +124,13 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		}
 	}
 	
-	public TaskData createTaskDataFromGitlabIssue(GitlabIssue issue, TaskRepository repository) throws CoreException {
-		return createTaskDataFromGitlabIssue(issue, repository, new ArrayList<GitlabNote>());
-	}
-	
 	public TaskData createTaskDataFromGitlabIssue(GitlabIssue issue, TaskRepository repository, 
 			List<GitlabNote> notes) throws CoreException {
 		GitlabConnection connection = connector.get(repository);
 		TaskData data = new TaskData(connection.mapper, GitlabPlugin.CONNECTOR_KIND, repository.getUrl(), 
 				"" + issue.getId());
+		
+		String labels = StringUtils.join(issue.getLabels(), ", ");
 		
 		createDefaultAttributes(data, true);
 		
@@ -135,12 +138,14 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		root.getAttribute(GitlabAttribute.AUTHOR.getTaskKey()).setValue(issue.getAuthor().getName());
 		root.getAttribute(GitlabAttribute.CREATED.getTaskKey()).setValue("" + issue.getCreatedAt().getTime());
 		root.getAttribute(GitlabAttribute.BODY.getTaskKey()).setValue(issue.getDescription());
-		root.getAttribute(GitlabAttribute.LABELS.getTaskKey()).setValue(StringUtils.join(issue.getLabels(), ", "));
+		root.getAttribute(GitlabAttribute.LABELS.getTaskKey()).setValue(labels);
 		root.getAttribute(GitlabAttribute.PROJECT.getTaskKey()).setValue(connection.project.getName());
 		root.getAttribute(GitlabAttribute.STATUS.getTaskKey()).setValue(issue.getState());
 		root.getAttribute(GitlabAttribute.TITLE.getTaskKey()).setValue(issue.getTitle());
 		
 		root.getAttribute(GitlabAttribute.IID.getTaskKey()).setValue("" + issue.getIid());
+		root.getAttribute(GitlabAttribute.PRIORITY.getTaskKey()).setValue(getPriority(labels));
+		root.getAttribute(GitlabAttribute.TYPE.getTaskKey()).setValue(getType(labels));
 		
 		if(issue.getUpdatedAt() != null) {
 			root.getAttribute(GitlabAttribute.UPDATED.getTaskKey()).setValue("" + issue.getUpdatedAt().getTime());
@@ -187,6 +192,8 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		createAttribute(data, GitlabAttribute.ASSIGNEE);
 		
 		createAttribute(data, GitlabAttribute.IID);
+		createAttribute(data, GitlabAttribute.PRIORITY);
+		createAttribute(data, GitlabAttribute.TYPE);
 
 		data.getRoot().getAttribute(GitlabAttribute.CREATED.getTaskKey()).setValue("" + (new Date().getTime()));
 
@@ -209,6 +216,33 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		metaData.setKind(attribute.getKind());
 		metaData.setLabel(attribute.toString());
 		metaData.setReadOnly(attribute.isReadOnly());
+	}
+	
+	private String getPriority(String labels) {
+		Matcher m = priorityPattern.matcher(labels);
+		if(m.find()) {
+			switch(m.group(1)) {
+			case "high":
+				return PriorityLevel.P1.toString();
+				
+			case "low":
+				return PriorityLevel.P5.toString();
+				
+			default:
+				break;
+			}
+		}
+
+		return PriorityLevel.P3.toString();
+	}
+	
+	private String getType(String labels) {
+		Matcher m = typePattern.matcher(labels);
+		if(m.find()) {
+			return m.group(1);
+		}
+
+		return "";
 	}
 
 }

@@ -10,9 +10,11 @@
             id="de.weingardt.gitlab.core"
             name="Gitlab Connector"/>
       <connectorUi
+      		brandingIcon="icons/gitlab-icon.gif"
             class="de.weingardt.gitlab.ui.GitlabConnectorUI"
             id="de.weingardt.gitlab.ui"
-            name="Gitlab Connector Ui"/>
+            name="Gitlab Connector Ui"
+            overlayIcon="icons/gitlab-overlay.gif"/>
    </extension>
    <extension point="org.eclipse.mylyn.tasks.ui.editors">
          <pageFactory
@@ -20,5 +22,4 @@
             id="de.weingardt.mtrack.ui.editor.pageFactory">
       </pageFactory>
    </extension>
-
 </plugin>

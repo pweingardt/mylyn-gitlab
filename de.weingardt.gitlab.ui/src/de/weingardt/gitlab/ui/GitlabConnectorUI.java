@@ -12,6 +12,7 @@ import org.eclipse.mylyn.tasks.ui.wizards.ITaskRepositoryPage;
 import org.eclipse.mylyn.tasks.ui.wizards.NewTaskWizard;
 import org.eclipse.mylyn.tasks.ui.wizards.RepositoryQueryWizard;
 
+import de.weingardt.gitlab.core.GitlabAttribute;
 import de.weingardt.gitlab.core.GitlabPlugin;
 
 public class GitlabConnectorUI extends AbstractRepositoryConnectorUi {
@@ -48,6 +49,22 @@ public class GitlabConnectorUI extends AbstractRepositoryConnectorUi {
 	@Override
 	public boolean hasSearchPage() {
 		return false;
+	}
+	
+	@Override
+	public ImageDescriptor getTaskKindOverlay(ITask task) {
+		switch(task.getTaskKind()) {
+		case GitlabAttribute.TypeBug:
+			return GitlabImages.OVERLAY_BUG;
+			
+		case GitlabAttribute.TypeFeature:
+			return GitlabImages.OVERLAY_FEATURE;
+			
+		case GitlabAttribute.TypeStory:
+			return GitlabImages.OVERLAY_STORY;
+		}
+
+		return super.getTaskKindOverlay(task);
 	}
 	
 	@Override

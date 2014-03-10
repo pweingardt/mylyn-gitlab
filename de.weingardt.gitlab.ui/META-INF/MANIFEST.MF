@@ -13,3 +13,5 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.9.0",
  de.weingardt.gitlab.core;bundle-version="1.0.0",
  org.eclipse.mylyn.commons.ui;bundle-version="3.9.2"
 Bundle-Vendor: Weingardt Software
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: de.weingardt.gitlab.ui.GitlabUIPlugin

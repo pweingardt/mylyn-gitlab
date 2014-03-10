@@ -17,7 +17,7 @@ public enum GitlabAttribute {
 	STATUS("Status", TaskAttribute.STATUS, 
 			TaskAttribute.TYPE_SHORT_TEXT, GitlabFlag.ATTRIBUTE, GitlabFlag.READ_ONLY),
 
-	LABELS("Labels", TaskAttribute.TASK_KIND,
+	LABELS("Labels", GitlabAttributeKeys.labelsKey,
 			TaskAttribute.TYPE_SHORT_TEXT, GitlabFlag.ATTRIBUTE),
 
 	UPDATED("Updated", TaskAttribute.DATE_MODIFICATION,
@@ -39,8 +39,17 @@ public enum GitlabAttribute {
 			TaskAttribute.TYPE_PERSON, GitlabFlag.ATTRIBUTE),
 	
 	IID("IID", GitlabAttributeKeys.iidKey, TaskAttribute.TYPE_INTEGER,
-			GitlabFlag.READ_ONLY);
+			GitlabFlag.READ_ONLY),
+			
+	PRIORITY("Priority", TaskAttribute.PRIORITY,
+			TaskAttribute.TYPE_SHORT_TEXT, GitlabFlag.READ_ONLY), 
+			
+	TYPE("Type", TaskAttribute.TASK_KIND,
+			TaskAttribute.TYPE_SHORT_TEXT, GitlabFlag.READ_ONLY);
 
+	public static final String TypeBug = "bug";
+	public static final String TypeFeature = "feature";
+	public static final String TypeStory = "story";
 	
 	private Set<GitlabFlag> flags;
 
