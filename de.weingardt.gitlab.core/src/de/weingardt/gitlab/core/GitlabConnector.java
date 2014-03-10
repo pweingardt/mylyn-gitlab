@@ -17,7 +17,6 @@ import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.data.AbstractTaskDataHandler;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskDataCollector;
-import org.eclipse.mylyn.tasks.core.data.TaskMapper;
 import org.eclipse.mylyn.tasks.core.sync.ISynchronizationSession;
 import org.gitlab.api.GitlabAPI;
 import org.gitlab.api.models.GitlabIssue;
@@ -146,7 +145,7 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 
 	@Override
 	public void updateTaskFromTaskData(TaskRepository repository, ITask task, TaskData data) {
-		TaskMapper mapper = new TaskMapper(data);
+		GitlabTaskMapper mapper = new GitlabTaskMapper(data);
 		task.setCompletionDate(mapper.getCompletionDate());
 		mapper.applyTo(task);
 	}

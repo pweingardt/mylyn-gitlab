@@ -1,5 +1,6 @@
 package de.weingardt.gitlab.ui;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.ITask;
@@ -31,9 +32,16 @@ public class GitlabConnectorUI extends AbstractRepositoryConnectorUi {
 		wizard.addPage(new GitlabQueryPage("New Page", repository, query));
 		return wizard;
 	}
+	
+	@Override
+	public ImageDescriptor getTaskPriorityOverlay(ITask task) {
+		ImageDescriptor image = super.getTaskPriorityOverlay(task);
+		return image;
+	}
 
 	@Override
 	public ITaskRepositoryPage getSettingsPage(TaskRepository repository) {
+		repository.setBugRepository(true);
 		return new GitlabRepositorySettingsPage(Strings.NEW_REPOSITORY, "description", repository);
 	}
 
