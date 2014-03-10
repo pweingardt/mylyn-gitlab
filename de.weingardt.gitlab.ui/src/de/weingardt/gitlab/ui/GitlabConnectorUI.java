@@ -42,7 +42,6 @@ public class GitlabConnectorUI extends AbstractRepositoryConnectorUi {
 
 	@Override
 	public ITaskRepositoryPage getSettingsPage(TaskRepository repository) {
-		repository.setBugRepository(true);
 		return new GitlabRepositorySettingsPage(Strings.NEW_REPOSITORY, "description", repository);
 	}
 

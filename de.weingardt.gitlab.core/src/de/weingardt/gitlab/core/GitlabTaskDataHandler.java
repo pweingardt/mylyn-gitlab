@@ -24,6 +24,7 @@ import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMetaData;
 import org.eclipse.mylyn.tasks.core.data.TaskCommentMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
+import org.eclipse.mylyn.tasks.core.data.TaskOperation;
 import org.gitlab.api.GitlabAPI;
 import org.gitlab.api.models.GitlabIssue;
 import org.gitlab.api.models.GitlabNote;
@@ -91,8 +92,10 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 							root.getAttribute(TaskAttribute.COMMENT_NEW).getValue());
 				}
 				
+				String action = root.getAttribute(TaskAttribute.OPERATION).getValue();
+
 				issue = api.editIssue(connection.project.getId(), GitlabConnector.getTicketId(data.getTaskId()), 0, 
-						0, labels, body, title, GitlabIssue.Action.LEAVE);
+						0, labels, body, title, GitlabAction.find(action).getGitlabIssueAction());
 				return new RepositoryResponse(ResponseKind.TASK_UPDATED, "" + issue.getId());
 			}
 		} catch (IOException e) {
@@ -174,6 +177,13 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 			cmapper.setNumber(i + 1);
 			TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_COMMENT + (i + 1));
 			cmapper.applyTo(attribute);
+		}
+		
+		GitlabAction[] actions = GitlabAction.getActions(issue);
+		for(int i = 0; i < actions.length; ++i) {
+			GitlabAction action = actions[i];
+			TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_OPERATION + action.label);
+			TaskOperation.applyTo(attribute, action.label, action.label);
 		}
 		
 		return data;
