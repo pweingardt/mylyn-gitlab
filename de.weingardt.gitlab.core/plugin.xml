@@ -6,8 +6,8 @@
          name="%repository.name"
          point="org.eclipse.mylyn.tasks.ui.repositories">
       <connectorCore
-            class="de.weingardt.gitlab.core.GitlabConnector"
-            id="de.weingardt.gitlab.core"
+            class="de.weingardt.mylyn.gitlab.core.GitlabConnector"
+            id="de.weingardt.mylyn.gitlab.core"
             name="Gitlab Connector"/>
    </extension>
 </plugin>

@@ -7,15 +7,15 @@
          point="org.eclipse.mylyn.tasks.ui.repositories">
       <connectorUi
       		brandingIcon="icons/gitlab-icon.gif"
-            class="de.weingardt.gitlab.ui.GitlabConnectorUI"
-            id="de.weingardt.gitlab.ui"
+            class="de.weingardt.mylyn.gitlab.ui.GitlabConnectorUI"
+            id="de.weingardt.mylyn.gitlab.ui"
             name="Gitlab Connector Ui"
             overlayIcon="icons/gitlab-overlay.gif"/>
    </extension>
    <extension point="org.eclipse.mylyn.tasks.ui.editors">
          <pageFactory
-            class="de.weingardt.gitlab.ui.GitlabEditorPageFactory"
-            id="de.weingardt.mtrack.ui.editor.pageFactory">
+            class="de.weingardt.mylyn.gitlab.ui.GitlabEditorPageFactory"
+            id="de.weingardt.mylyn.gitlab.ui.pageFactory">
       </pageFactory>
    </extension>
 </plugin>

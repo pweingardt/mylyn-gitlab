@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="de.weingardt.mylyn.gitlab"
+      label="Mylyn Gitlab Connector"
+      version="1.0.0.qualifier"
+      provider-name="Weingardt Software">
+
+   <description>
+      A simple Mylyn connector for the open source management software Gitlab.
+   </description>
+
+   <copyright>
+      Copyright by Paul Weingardt
+   </copyright>
+
+   <license url="http://www.eclipse.org/legal/epl-v10.html">
+      Eclipse Public License v1.0
+   </license>
+
+   <plugin
+         id="de.weingardt.mylyn.gitlab.core"
+         download-size="0"
+         install-size="0"
+         version="1.0.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="de.weingardt.mylyn.gitlab.ui"
+         download-size="0"
+         install-size="0"
+         version="1.0.0.qualifier"
+         unpack="false"/>
+
+</feature>
