@@ -27,7 +27,9 @@ import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskOperation;
 import org.gitlab.api.GitlabAPI;
 import org.gitlab.api.models.GitlabIssue;
+import org.gitlab.api.models.GitlabMilestone;
 import org.gitlab.api.models.GitlabNote;
+import org.gitlab.api.models.GitlabProjectMember;
 
 import de.weingardt.gitlab.core.exceptions.GitlabException;
 
@@ -47,7 +49,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		try {
 			return GitlabPlugin.get().getConnector().get(repository).mapper;
 		} catch (CoreException e) {
-			return new GitlabAttributeMapper(repository);
+			return null;
 		}
 	}
 
@@ -62,6 +64,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		root.getAttribute(GitlabAttribute.PROJECT.getTaskKey()).setValue(connection.project.getName());
 		root.getAttribute(GitlabAttribute.LABELS.getTaskKey()).setValue("");
 		root.getAttribute(GitlabAttribute.STATUS.getTaskKey()).setValue("open");
+		root.getAttribute(GitlabAttribute.MILESTONE.getTaskKey()).setValue("");
 		
 		return true;
 	}
@@ -71,18 +74,40 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 			Set<TaskAttribute> attributes, IProgressMonitor monitor)
 			throws CoreException {
 		
+		GitlabAttributeMapper attributeMapper = (GitlabAttributeMapper) data.getAttributeMapper();
+		
 		TaskAttribute root = data.getRoot();
 		String labels = root.getAttribute(GitlabAttribute.LABELS.getTaskKey()).getValue();
 		String title = root.getAttribute(GitlabAttribute.TITLE.getTaskKey()).getValue();
 		String body = root.getAttribute(GitlabAttribute.BODY.getTaskKey()).getValue();
 		
+		Integer assigneeId = 0;
+		
+		// We have to check, if the assignee has changed. The gitlab api leaves three posiblities for the assignee ID:
+		// 0: leave as it is
+		// -1: unassign
+		// real id: assign
+		// If we didnt do this, Gitlab would create a comment everytime we edit the issue and there is still no
+		// assignee
+		for(TaskAttribute a : attributes) {
+			if(a.getId().equals(GitlabAttribute.ASSIGNEE.getTaskKey())) {
+				GitlabProjectMember assignee = attributeMapper.findProjectMemberByName(
+						root.getAttribute(GitlabAttribute.ASSIGNEE.getTaskKey()).getValue());
+				assigneeId = (assignee == null ? -1 : assignee.getId());
+			}
+		}
+		
+		GitlabMilestone milestone = attributeMapper.findMilestoneByName(
+				root.getAttribute(GitlabAttribute.MILESTONE.getTaskKey()).getValue());
+		Integer milestoneId = (milestone == null ? 0 : milestone.getId());
+		
 		GitlabConnection connection = connector.get(repository);
 		GitlabAPI api = connection.api();
-		
+
 		try {
 			GitlabIssue issue = null;
 			if(data.isNew()) {
-				issue = api.createIssue(connection.project.getId(), 0, 0, labels, body, title);
+				issue = api.createIssue(connection.project.getId(), assigneeId, milestoneId, labels, body, title);
 				return new RepositoryResponse(ResponseKind.TASK_CREATED, "" + issue.getId());
 			} else {
 
@@ -94,8 +119,8 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 				
 				String action = root.getAttribute(TaskAttribute.OPERATION).getValue();
 
-				issue = api.editIssue(connection.project.getId(), GitlabConnector.getTicketId(data.getTaskId()), 0, 
-						0, labels, body, title, GitlabAction.find(action).getGitlabIssueAction());
+				issue = api.editIssue(connection.project.getId(), GitlabConnector.getTicketId(data.getTaskId()), assigneeId, 
+						milestoneId, labels, body, title, GitlabAction.find(action).getGitlabIssueAction());
 				return new RepositoryResponse(ResponseKind.TASK_UPDATED, "" + issue.getId());
 			}
 		} catch (IOException e) {
@@ -150,6 +175,10 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		root.getAttribute(GitlabAttribute.PRIORITY.getTaskKey()).setValue(getPriority(labels));
 		root.getAttribute(GitlabAttribute.TYPE.getTaskKey()).setValue(getType(labels));
 		
+		if(issue.getMilestone() != null) {
+			root.getAttribute(GitlabAttribute.MILESTONE.getTaskKey()).setValue(issue.getMilestone().getTitle());
+		}
+		
 		if(issue.getUpdatedAt() != null) {
 			root.getAttribute(GitlabAttribute.UPDATED.getTaskKey()).setValue("" + issue.getUpdatedAt().getTime());
 		}
@@ -200,6 +229,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		createAttribute(data, GitlabAttribute.COMPLETED);
 		createAttribute(data, GitlabAttribute.UPDATED);
 		createAttribute(data, GitlabAttribute.ASSIGNEE);
+		createAttribute(data, GitlabAttribute.MILESTONE);
 		
 		createAttribute(data, GitlabAttribute.IID);
 		createAttribute(data, GitlabAttribute.PRIORITY);

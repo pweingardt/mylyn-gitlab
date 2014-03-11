@@ -55,6 +55,7 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 					if(p.getPathWithNamespace().equals(projectPath)) {
 						GitlabConnection connection = new GitlabConnection(host, p, session, 
 								new GitlabAttributeMapper(repository));
+						connection.mapper.update(connection);
 						connections.put(repository.getUrl(), connection);
 						return connection;
 					}

@@ -37,6 +37,9 @@ public enum GitlabAttribute {
 
 	ASSIGNEE("Assignee", TaskAttribute.USER_ASSIGNED,
 			TaskAttribute.TYPE_PERSON, GitlabFlag.ATTRIBUTE),
+			
+	MILESTONE("Milestone", GitlabAttributeKeys.milestone, 
+			TaskAttribute.TYPE_SINGLE_SELECT, GitlabFlag.ATTRIBUTE),
 	
 	IID("IID", GitlabAttributeKeys.iidKey, TaskAttribute.TYPE_INTEGER,
 			GitlabFlag.READ_ONLY),
