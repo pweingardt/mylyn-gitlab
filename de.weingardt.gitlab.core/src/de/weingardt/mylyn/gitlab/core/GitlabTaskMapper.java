@@ -1,4 +1,4 @@
-package de.weingardt.gitlab.core;
+package de.weingardt.mylyn.gitlab.core;
 
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskMapper;

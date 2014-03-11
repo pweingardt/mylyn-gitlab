@@ -1,4 +1,4 @@
-package de.weingardt.gitlab.ui;
+package de.weingardt.mylyn.gitlab.ui;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.IWizard;
@@ -12,8 +12,8 @@ import org.eclipse.mylyn.tasks.ui.wizards.ITaskRepositoryPage;
 import org.eclipse.mylyn.tasks.ui.wizards.NewTaskWizard;
 import org.eclipse.mylyn.tasks.ui.wizards.RepositoryQueryWizard;
 
-import de.weingardt.gitlab.core.GitlabAttribute;
-import de.weingardt.gitlab.core.GitlabPlugin;
+import de.weingardt.mylyn.gitlab.core.GitlabAttribute;
+import de.weingardt.mylyn.gitlab.core.GitlabPlugin;
 
 public class GitlabConnectorUI extends AbstractRepositoryConnectorUi {
 	

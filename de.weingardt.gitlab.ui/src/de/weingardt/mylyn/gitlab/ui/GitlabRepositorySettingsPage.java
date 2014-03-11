@@ -1,4 +1,4 @@
-package de.weingardt.gitlab.ui;
+package de.weingardt.mylyn.gitlab.ui;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -6,8 +6,8 @@ import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage;
 import org.eclipse.swt.widgets.Composite;
 
-import de.weingardt.gitlab.core.GitlabConnector;
-import de.weingardt.gitlab.core.GitlabPlugin;
+import de.weingardt.mylyn.gitlab.core.GitlabConnector;
+import de.weingardt.mylyn.gitlab.core.GitlabPlugin;
 
 public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage {
 

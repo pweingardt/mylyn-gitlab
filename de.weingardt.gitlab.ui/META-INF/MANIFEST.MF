@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Gitlab Mylyn Connector UI
-Bundle-SymbolicName: de.weingardt.gitlab.ui;singleton:=true
+Bundle-Name: Mylyn Gitlab Connector UI
+Bundle-SymbolicName: de.weingardt.mylyn.gitlab.ui;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.core.runtime;bundle-version="3.9.0",
@@ -10,8 +10,8 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.9.0",
  org.eclipse.mylyn.tasks.ui;bundle-version="3.9.2",
  org.eclipse.mylyn.tasks.core;bundle-version="3.9.2",
  org.eclipse.mylyn.commons.workbench;bundle-version="3.9.2",
- de.weingardt.gitlab.core;bundle-version="1.0.0",
- org.eclipse.mylyn.commons.ui;bundle-version="3.9.2"
+ org.eclipse.mylyn.commons.ui;bundle-version="3.9.2",
+ de.weingardt.mylyn.gitlab.core;bundle-version="1.0.0"
 Bundle-Vendor: Weingardt Software
 Bundle-ActivationPolicy: lazy
-Bundle-Activator: de.weingardt.gitlab.ui.GitlabUIPlugin
+Bundle-Activator: de.weingardt.mylyn.gitlab.ui.GitlabUIPlugin

@@ -1,4 +1,4 @@
-package de.weingardt.gitlab.core;
+package de.weingardt.mylyn.gitlab.core;
 
 public class GitlabAttributeKeys {
 	

@@ -1,9 +1,9 @@
-package de.weingardt.gitlab.core.exceptions;
+package de.weingardt.mylyn.gitlab.core.exceptions;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Status;
 
-import de.weingardt.gitlab.core.GitlabPlugin;
+import de.weingardt.mylyn.gitlab.core.GitlabPlugin;
 
 public class GitlabException extends CoreException {
 

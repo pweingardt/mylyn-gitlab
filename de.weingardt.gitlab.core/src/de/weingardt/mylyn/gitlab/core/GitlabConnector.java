@@ -1,4 +1,4 @@
-package de.weingardt.gitlab.core;
+package de.weingardt.mylyn.gitlab.core;
 
 import java.io.IOException;
 import java.net.URL;
@@ -23,7 +23,7 @@ import org.gitlab.api.models.GitlabIssue;
 import org.gitlab.api.models.GitlabProject;
 import org.gitlab.api.models.GitlabSession;
 
-import de.weingardt.gitlab.core.exceptions.GitlabException;
+import de.weingardt.mylyn.gitlab.core.exceptions.GitlabException;
 
 public class GitlabConnector extends AbstractRepositoryConnector {
 

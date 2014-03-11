@@ -1,4 +1,4 @@
-package de.weingardt.gitlab.ui;
+package de.weingardt.mylyn.gitlab.ui;
 
 import org.eclipse.mylyn.commons.ui.CommonImages;
 import org.eclipse.mylyn.tasks.ui.ITasksUiConstants;
@@ -9,7 +9,7 @@ import org.eclipse.mylyn.tasks.ui.editors.TaskEditorInput;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.forms.editor.IFormPage;
 
-import de.weingardt.gitlab.core.GitlabPlugin;
+import de.weingardt.mylyn.gitlab.core.GitlabPlugin;
 
 public class GitlabEditorPageFactory extends AbstractTaskEditorPageFactory {
 

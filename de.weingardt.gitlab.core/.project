@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>Gitlab Mylyn Connector Core</name>
+	<name>de.weingardt.mylyn.gitlab.core</name>
 	<comment></comment>
 	<projects>
 	</projects>

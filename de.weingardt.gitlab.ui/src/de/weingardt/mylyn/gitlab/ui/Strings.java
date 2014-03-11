@@ -1,4 +1,4 @@
-package de.weingardt.gitlab.ui;
+package de.weingardt.mylyn.gitlab.ui;
 
 public class Strings {
 

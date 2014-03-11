@@ -2,7 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         id="de.weingardt.gitlab.ui"
+         id="de.weingardt.mylyn.gitlab.ui"
          name="%repository.name"
          point="org.eclipse.mylyn.tasks.ui.repositories">
       <connectorUi

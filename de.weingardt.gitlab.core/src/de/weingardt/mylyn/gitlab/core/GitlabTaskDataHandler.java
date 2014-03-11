@@ -1,4 +1,4 @@
-package de.weingardt.gitlab.core;
+package de.weingardt.mylyn.gitlab.core;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -31,7 +31,7 @@ import org.gitlab.api.models.GitlabMilestone;
 import org.gitlab.api.models.GitlabNote;
 import org.gitlab.api.models.GitlabProjectMember;
 
-import de.weingardt.gitlab.core.exceptions.GitlabException;
+import de.weingardt.mylyn.gitlab.core.exceptions.GitlabException;
 
 public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 	

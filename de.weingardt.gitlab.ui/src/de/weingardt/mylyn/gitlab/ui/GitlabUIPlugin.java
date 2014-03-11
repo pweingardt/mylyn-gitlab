@@ -1,4 +1,4 @@
-package de.weingardt.gitlab.ui;
+package de.weingardt.mylyn.gitlab.ui;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
