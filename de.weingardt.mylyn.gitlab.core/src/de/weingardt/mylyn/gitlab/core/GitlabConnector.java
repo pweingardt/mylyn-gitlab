@@ -89,7 +89,7 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 			IProgressMonitor monitor) {
 		
 		try {
-			GitlabConnection connection = GitlabPluginCore.get().get(repository);
+			GitlabConnection connection = ConnectionManager.get(repository);
 			GitlabAPI api = connection.api();
 			
 			GitlabIssueSearch search = new GitlabIssueSearch(query);
@@ -111,7 +111,7 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 	@Override
 	public void updateRepositoryConfiguration(TaskRepository repository,
 			IProgressMonitor monitor) throws CoreException {
-		GitlabPluginCore.get().get(repository, true);
+		ConnectionManager.get(repository, true);
 	}
 
 	@Override
@@ -123,7 +123,7 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 
 	public static void validate(TaskRepository taskRepo) throws CoreException {
 		try {
-			GitlabPluginCore.get().get(taskRepo);
+			ConnectionManager.get(taskRepo);
 		} catch (Exception | Error e) {
 			throw new GitlabException("Connection not successful or repository not found!");
 		}

@@ -57,7 +57,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 	@Override
 	public TaskAttributeMapper getAttributeMapper(TaskRepository repository) {
 		try {
-			return GitlabPluginCore.get().get(repository).mapper;
+			return ConnectionManager.get(repository).mapper;
 		} catch (CoreException e) {
 			return null;
 		}
@@ -68,7 +68,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 			ITaskMapping mapping, IProgressMonitor monitor) throws CoreException {
 		createDefaultAttributes(data, false);
 		
-		GitlabConnection connection = GitlabPluginCore.get().get(repository);
+		GitlabConnection connection = ConnectionManager.get(repository);
 		TaskAttribute root = data.getRoot();
 
 		root.getAttribute(GitlabAttribute.PROJECT.getTaskKey()).setValue(connection.project.getName());
@@ -111,7 +111,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 				root.getAttribute(GitlabAttribute.MILESTONE.getTaskKey()).getValue());
 		Integer milestoneId = (milestone == null ? 0 : milestone.getId());
 		
-		GitlabConnection connection = GitlabPluginCore.get().get(repository);
+		GitlabConnection connection = ConnectionManager.get(repository);
 		GitlabAPI api = connection.api();
 
 		try {
@@ -151,7 +151,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 
 	public TaskData downloadTaskData(TaskRepository repository, Integer ticketId) throws CoreException {
 		try {
-			GitlabConnection connection = GitlabPluginCore.get().get(repository);
+			GitlabConnection connection = ConnectionManager.get(repository);
 			GitlabAPI api = connection.api();
 			GitlabIssue issue = api.getIssue(connection.project.getId(), ticketId);
 			List<GitlabNote> notes = api.getNotes(issue);
@@ -164,7 +164,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 	
 	public TaskData createTaskDataFromGitlabIssue(GitlabIssue issue, TaskRepository repository, 
 			List<GitlabNote> notes) throws CoreException {
-		GitlabConnection connection = GitlabPluginCore.get().get(repository);
+		GitlabConnection connection = ConnectionManager.get(repository);
 		TaskData data = new TaskData(connection.mapper, GitlabPluginCore.CONNECTOR_KIND, repository.getUrl(), 
 				"" + issue.getId());
 		

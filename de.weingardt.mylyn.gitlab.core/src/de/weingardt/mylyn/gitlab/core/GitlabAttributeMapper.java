@@ -42,7 +42,7 @@ public class GitlabAttributeMapper extends TaskAttributeMapper {
 	}
 	
 	private GitlabConnection getConnection() throws CoreException {
-		return GitlabPluginCore.get().get(getTaskRepository());
+		return ConnectionManager.get(getTaskRepository());
 	}
 	
 	public GitlabProjectMember findProjectMemberByName(String name) {

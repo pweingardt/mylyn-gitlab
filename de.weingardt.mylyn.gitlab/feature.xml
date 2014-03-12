@@ -6,11 +6,12 @@
       provider-name="Weingardt Software">
 
    <description>
-      A simple Mylyn connector for the open source management software Gitlab.
+      A simple Mylyn connector for the open source management software
+Gitlab.
    </description>
 
    <copyright>
-      Copyright by Paul Weingardt
+      Copyright by Paul Weingardt, licensed under EPL v1.0
    </copyright>
 
    <license url="http://www.eclipse.org/legal/epl-v10.html">
