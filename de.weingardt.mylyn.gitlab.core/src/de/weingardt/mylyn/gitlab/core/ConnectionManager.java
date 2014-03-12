@@ -35,6 +35,10 @@ public class ConnectionManager {
 				
 				GitlabAPI api = GitlabAPI.connect(host, session.getPrivateToken());
 				
+				if(projectPath.endsWith(".git")) {
+					projectPath = projectPath.substring(0, projectPath.length() - 4);
+				}
+				
 				List<GitlabProject> projects = api.getProjects();
 				for(GitlabProject p : projects) {
 					if(p.getPathWithNamespace().equals(projectPath)) {
