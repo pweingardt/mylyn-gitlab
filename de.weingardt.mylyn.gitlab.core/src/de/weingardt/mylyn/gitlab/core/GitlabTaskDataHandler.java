@@ -37,17 +37,14 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 	
 	private static Pattern priorityPattern = Pattern.compile("priority:(high|normal|low)");
 	private static Pattern typePattern = Pattern.compile("type:(bug|feature|story)");
-	
-	private GitlabConnector connector;
-	
-	public GitlabTaskDataHandler(GitlabConnector gitlabConnector) {
-		this.connector = gitlabConnector;
+		
+	public GitlabTaskDataHandler() {
 	}
 
 	@Override
 	public TaskAttributeMapper getAttributeMapper(TaskRepository repository) {
 		try {
-			return GitlabPlugin.get().getConnector().get(repository).mapper;
+			return GitlabPluginCore.get().get(repository).mapper;
 		} catch (CoreException e) {
 			return null;
 		}
@@ -58,7 +55,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 			ITaskMapping mapping, IProgressMonitor monitor) throws CoreException {
 		createDefaultAttributes(data, false);
 		
-		GitlabConnection connection = GitlabPlugin.get().getConnector().get(repository);
+		GitlabConnection connection = GitlabPluginCore.get().get(repository);
 		TaskAttribute root = data.getRoot();
 
 		root.getAttribute(GitlabAttribute.PROJECT.getTaskKey()).setValue(connection.project.getName());
@@ -101,7 +98,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 				root.getAttribute(GitlabAttribute.MILESTONE.getTaskKey()).getValue());
 		Integer milestoneId = (milestone == null ? 0 : milestone.getId());
 		
-		GitlabConnection connection = connector.get(repository);
+		GitlabConnection connection = GitlabPluginCore.get().get(repository);
 		GitlabAPI api = connection.api();
 
 		try {
@@ -141,7 +138,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 
 	public TaskData downloadTaskData(TaskRepository repository, Integer ticketId) throws CoreException {
 		try {
-			GitlabConnection connection = connector.get(repository);
+			GitlabConnection connection = GitlabPluginCore.get().get(repository);
 			GitlabAPI api = connection.api();
 			GitlabIssue issue = api.getIssue(connection.project.getId(), ticketId);
 			List<GitlabNote> notes = api.getNotes(issue);
@@ -154,8 +151,8 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 	
 	public TaskData createTaskDataFromGitlabIssue(GitlabIssue issue, TaskRepository repository, 
 			List<GitlabNote> notes) throws CoreException {
-		GitlabConnection connection = connector.get(repository);
-		TaskData data = new TaskData(connection.mapper, GitlabPlugin.CONNECTOR_KIND, repository.getUrl(), 
+		GitlabConnection connection = GitlabPluginCore.get().get(repository);
+		TaskData data = new TaskData(connection.mapper, GitlabPluginCore.CONNECTOR_KIND, repository.getUrl(), 
 				"" + issue.getId());
 		
 		String labels = StringUtils.join(issue.getLabels(), ", ");

@@ -16,4 +16,4 @@ Bundle-ClassPath: lib/gitlab-java.jar,
  lib/jackson-core-asl-1.9.9.jar,
  lib/jackson-mapper-asl-1.9.9.jar,
  .
-Bundle-Activator: de.weingardt.mylyn.gitlab.core.GitlabPlugin
+Bundle-Activator: de.weingardt.mylyn.gitlab.core.GitlabPluginCore

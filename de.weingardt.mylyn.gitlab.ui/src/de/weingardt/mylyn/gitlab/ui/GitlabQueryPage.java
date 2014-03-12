@@ -24,6 +24,10 @@ public class GitlabQueryPage extends AbstractRepositoryQueryPage implements
 	private TextSearchField label;
 	private TextSearchField assignee;
 	
+	private TextSearchField priority;
+	private TextSearchField type;
+	private TextSearchField milestone;
+	
 	private ComboSearchField state;
 	
 	private List<String> issueStates = Arrays.asList("opened", "closed");
@@ -66,6 +70,10 @@ public class GitlabQueryPage extends AbstractRepositoryQueryPage implements
 		label = new TextSearchField(parent, "Labels: ");
 		assignee = new TextSearchField(parent, "Assignee: ");
 		
+		priority = new TextSearchField(parent, "Priority: ");
+		type = new TextSearchField(parent, "Type: ");
+		milestone = new TextSearchField(parent, "Milestone: ");
+		
 		state = new ComboSearchField(parent, "State: ", issueStates);
 	}
 
@@ -77,6 +85,10 @@ public class GitlabQueryPage extends AbstractRepositoryQueryPage implements
 		query.setAttribute("label", label.get());
 		query.setAttribute("assignee", assignee.get());
 		
+		query.setAttribute("priority", priority.get());
+		query.setAttribute("type", type.get());
+		query.setAttribute("milestone", milestone.get());
+		
 		query.setAttribute("state", state.get());
 	}
 
@@ -86,6 +98,10 @@ public class GitlabQueryPage extends AbstractRepositoryQueryPage implements
 		description.set(query.getAttribute("description"));
 		label.set(query.getAttribute("label"));
 		assignee.set(query.getAttribute("assignee"));
+		
+		priority.set(query.getAttribute("priority"));
+		type.set(query.getAttribute("type"));
+		milestone.set(query.getAttribute("milestone"));
 		
 		state.set(query.getAttribute("state"));
 	}

@@ -13,13 +13,13 @@ import org.eclipse.mylyn.tasks.ui.wizards.NewTaskWizard;
 import org.eclipse.mylyn.tasks.ui.wizards.RepositoryQueryWizard;
 
 import de.weingardt.mylyn.gitlab.core.GitlabAttribute;
-import de.weingardt.mylyn.gitlab.core.GitlabPlugin;
+import de.weingardt.mylyn.gitlab.core.GitlabPluginCore;
 
 public class GitlabConnectorUI extends AbstractRepositoryConnectorUi {
 	
 	@Override
 	public String getConnectorKind() {
-		return GitlabPlugin.CONNECTOR_KIND;
+		return GitlabPluginCore.CONNECTOR_KIND;
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import org.eclipse.mylyn.tasks.ui.editors.TaskEditorInput;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.forms.editor.IFormPage;
 
-import de.weingardt.mylyn.gitlab.core.GitlabPlugin;
+import de.weingardt.mylyn.gitlab.core.GitlabPluginCore;
 
 public class GitlabEditorPageFactory extends AbstractTaskEditorPageFactory {
 
@@ -20,7 +20,7 @@ public class GitlabEditorPageFactory extends AbstractTaskEditorPageFactory {
 
 	@Override
 	public IFormPage createPage(TaskEditor editor) {
-		return new GitlabEditorPage(editor, GitlabPlugin.CONNECTOR_KIND);
+		return new GitlabEditorPage(editor, GitlabPluginCore.CONNECTOR_KIND);
 	}
 
 	@Override

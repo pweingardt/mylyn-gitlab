@@ -10,23 +10,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
-import org.gitlab.api.GitlabAPI;
 import org.gitlab.api.models.GitlabMilestone;
 import org.gitlab.api.models.GitlabProjectMember;
 
 public class GitlabAttributeMapper extends TaskAttributeMapper {
-
-	private List<GitlabMilestone> milestones;
-	private List<GitlabProjectMember> members;
 	
 	public GitlabAttributeMapper(TaskRepository taskRepository) throws CoreException, IOException {
 		super(taskRepository);
-	}
-	
-	public void update(GitlabConnection connection) throws IOException {
-		GitlabAPI api = connection.api();
-		milestones = api.getMilestones(connection.project);
-		members = api.getProjectMembers(connection.project);
 	}
 	
 	@Override
@@ -38,28 +28,44 @@ public class GitlabAttributeMapper extends TaskAttributeMapper {
 		return super.getOptions(attribute);
 	}
 	
+	private GitlabConnection getConnection() throws CoreException {
+		return GitlabPluginCore.get().get(getTaskRepository());
+	}
+	
 	public GitlabProjectMember findProjectMemberByName(String name) {
-		for(GitlabProjectMember member : members) {
-			if(member.getName().equals(name) || member.getUsername().equals(name)) {
-				return member;
+		try {
+			List<GitlabProjectMember> members = getConnection().getProjectMembers();
+			for(GitlabProjectMember member : members) {
+				if(member.getName().equals(name) || member.getUsername().equals(name)) {
+					return member;
+				}
 			}
-		}
+		} catch (CoreException e) {
+		}		
 		return null;
 	}
 	
 	public GitlabMilestone findMilestoneByName(String name) {
-		for(GitlabMilestone m : milestones) {
-			if(m.getTitle().equals(name)) {
-				return m;
+		try {
+			List<GitlabMilestone> milestones = getConnection().getMilestones();
+			for(GitlabMilestone m : milestones) {
+				if(m.getTitle().equals(name)) {
+					return m;
+				}
 			}
+		} catch (CoreException e) {
 		}
 		return null;
 	}
 	
 	private List<String> getMilestones() {
 		List<String> target = new ArrayList<>();
-		for(GitlabMilestone m : milestones) {
-			target.add(m.getTitle());
+		try {			
+			List<GitlabMilestone> milestones = getConnection().getMilestones();
+			for(GitlabMilestone m : milestones) {
+				target.add(m.getTitle());
+			}
+		} catch (CoreException e) {
 		}
 		return target;
 	}

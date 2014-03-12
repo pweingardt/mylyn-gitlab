@@ -18,7 +18,7 @@ public enum GitlabAttribute {
 			TaskAttribute.TYPE_SHORT_TEXT, GitlabFlag.ATTRIBUTE, GitlabFlag.READ_ONLY),
 
 	LABELS("Labels", GitlabAttributeKeys.labelsKey,
-			TaskAttribute.TYPE_SHORT_TEXT, GitlabFlag.ATTRIBUTE),
+			TaskAttribute.TYPE_LONG_TEXT, GitlabFlag.ATTRIBUTE),
 
 	UPDATED("Updated", TaskAttribute.DATE_MODIFICATION,
 			TaskAttribute.TYPE_DATETIME, GitlabFlag.READ_ONLY, GitlabFlag.ATTRIBUTE),

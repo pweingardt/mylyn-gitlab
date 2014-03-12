@@ -7,7 +7,7 @@ import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage;
 import org.eclipse.swt.widgets.Composite;
 
 import de.weingardt.mylyn.gitlab.core.GitlabConnector;
-import de.weingardt.mylyn.gitlab.core.GitlabPlugin;
+import de.weingardt.mylyn.gitlab.core.GitlabPluginCore;
 
 public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage {
 
@@ -25,7 +25,7 @@ public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage
 
 	@Override
 	public String getConnectorKind() {
-		return GitlabPlugin.CONNECTOR_KIND;
+		return GitlabPluginCore.CONNECTOR_KIND;
 	}
 
 	@Override

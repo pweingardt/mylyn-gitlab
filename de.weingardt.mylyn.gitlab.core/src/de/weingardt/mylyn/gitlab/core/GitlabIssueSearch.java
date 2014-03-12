@@ -1,5 +1,9 @@
 package de.weingardt.mylyn.gitlab.core;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
@@ -7,20 +11,43 @@ import org.gitlab.api.models.GitlabIssue;
 
 public class GitlabIssueSearch {
 
+	private final static String priorityPatternFormat = "priority:(%s)";
+	private final static String typePatternFormat = "type:(%s)";
+	
+	
 	private Pattern titlePattern;
 	private Pattern descriptionPattern;
-	private Pattern labelPattern;
-	private Pattern assigneePattern;
+	
+	private String assignee;
+	private String milestone;
 	private String state;
+	
+	private List<Pattern> labelPatterns = new ArrayList<Pattern>();
 	
 	private static int flags = Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE;
 	
 	public GitlabIssueSearch(IRepositoryQuery query) {
 		titlePattern = Pattern.compile(query.getAttribute("title"), flags);
 		descriptionPattern = Pattern.compile(query.getAttribute("description"), flags);
-		labelPattern = Pattern.compile(query.getAttribute("label"), flags);
-		assigneePattern = Pattern.compile(query.getAttribute("assignee"), flags);
+
+		if(!query.getAttribute("label").equals("")) {
+			labelPatterns.add(Pattern.compile(query.getAttribute("label"), flags));
+		}
 		
+		if(!query.getAttribute("priority").equals("")) {
+			labelPatterns.add(
+					Pattern.compile(String.format(priorityPatternFormat, query.getAttribute("priority")), 
+							flags));
+		}
+		
+		if(!query.getAttribute("type").equals("")) {
+			labelPatterns.add(
+					Pattern.compile(String.format(typePatternFormat, query.getAttribute("type")), 
+							flags));
+		}
+		
+		milestone = query.getAttribute("milestone");
+		assignee = query.getAttribute("assignee");
 		state = query.getAttribute("state");
 	}
 	
@@ -29,15 +56,30 @@ public class GitlabIssueSearch {
 			return false;
 		}
 		
-		if(!descriptionPattern.pattern().equals("") && !descriptionPattern.matcher(issue.getTitle()).find()) {
+		if(!descriptionPattern.pattern().equals("") && !descriptionPattern.matcher(issue.getDescription()).find()) {
 			return false;
 		}
 		
-		if(!labelPattern.pattern().equals("") && !labelPattern.matcher(issue.getTitle()).find()) {
+		Set<Pattern> matches = new HashSet<>();
+		for(Pattern p : labelPatterns) {
+			for(String label : issue.getLabels()) {
+				if(p.matcher(label).find()) {
+					matches.add(p);
+				}
+			}
+		}
+		if(matches.size() != labelPatterns.size()) {
 			return false;
 		}
 		
-		if(!assigneePattern.pattern().equals("") && !assigneePattern.matcher(issue.getTitle()).find()) {
+		if(!assignee.equals("") && 
+				(issue.getAssignee() == null || !assignee.equals(issue.getAssignee().getUsername()))) {
+			return false;
+		}
+		
+		
+		if(!milestone.equals("") && 
+				(issue.getMilestone() == null || !milestone.equals(issue.getMilestone().getTitle()))) {
 			return false;
 		}
 		
