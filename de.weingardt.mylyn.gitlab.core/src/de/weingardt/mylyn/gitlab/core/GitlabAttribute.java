@@ -30,7 +30,7 @@ public enum GitlabAttribute {
 	STATUS("Status", TaskAttribute.STATUS, 
 			TaskAttribute.TYPE_SHORT_TEXT, GitlabFlag.ATTRIBUTE, GitlabFlag.READ_ONLY),
 
-	LABELS("Labels", GitlabAttributeKeys.labelsKey,
+	LABELS("Labels", "de.weingardt.gitlab.issue.labels",
 			TaskAttribute.TYPE_LONG_TEXT, GitlabFlag.ATTRIBUTE),
 
 	UPDATED("Updated", TaskAttribute.DATE_MODIFICATION,
@@ -51,10 +51,10 @@ public enum GitlabAttribute {
 	ASSIGNEE("Assignee", TaskAttribute.USER_ASSIGNED,
 			TaskAttribute.TYPE_PERSON, GitlabFlag.ATTRIBUTE),
 			
-	MILESTONE("Milestone", GitlabAttributeKeys.milestone, 
+	MILESTONE("Milestone", "de.weingardt.gitlab.issue.milestone", 
 			TaskAttribute.TYPE_SINGLE_SELECT, GitlabFlag.ATTRIBUTE),
 	
-	IID("IID", GitlabAttributeKeys.iidKey, TaskAttribute.TYPE_INTEGER,
+	IID("IID", "de.weingardt.gitlab.issue.iid", TaskAttribute.TYPE_INTEGER,
 			GitlabFlag.READ_ONLY),
 			
 	PRIORITY("Priority", TaskAttribute.PRIORITY,

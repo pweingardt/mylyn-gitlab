@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.mylyn.commons.net.Policy;
 import org.eclipse.mylyn.tasks.core.ITask.PriorityLevel;
 import org.eclipse.mylyn.tasks.core.ITaskMapping;
 import org.eclipse.mylyn.tasks.core.RepositoryResponse;
@@ -115,6 +114,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		GitlabAPI api = connection.api();
 
 		try {
+			monitor.beginTask("Uploading task", IProgressMonitor.UNKNOWN);
 			GitlabIssue issue = null;
 			if(data.isNew()) {
 				issue = api.createIssue(connection.project.getId(), assigneeId, milestoneId, labels, body, title);
@@ -135,18 +135,9 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 			}
 		} catch (IOException e) {
 			throw new GitlabException("Unknown connection error!");
-		}
-	}
-
-	public TaskData getTaskData(TaskRepository repository, String id,
-			IProgressMonitor monitor) throws CoreException {
-		monitor = Policy.monitorFor(monitor);
-		try {
-			monitor.beginTask("Task Download", IProgressMonitor.UNKNOWN); //$NON-NLS-1$
-			return downloadTaskData(repository, GitlabConnector.getTicketId(id));
 		} finally {
 			monitor.done();
-		}
+		}		
 	}
 
 	public TaskData downloadTaskData(TaskRepository repository, Integer ticketId) throws CoreException {

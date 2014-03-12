@@ -21,6 +21,8 @@ import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositoryQueryPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -48,8 +50,8 @@ public class GitlabQueryPage extends AbstractRepositoryQueryPage implements
 	public GitlabQueryPage(String pageName, TaskRepository taskRepository, IRepositoryQuery query) {
 		super(pageName, taskRepository, query);
 		
-		setTitle("Gitlab Issue Query");
-		setDescription("Gitlab Issue Query");		
+		setTitle(Strings.QUERY_TITLE);
+		setDescription(Strings.QUERY_TITLE);		
 	}
 
 	@Override
@@ -69,25 +71,41 @@ public class GitlabQueryPage extends AbstractRepositoryQueryPage implements
 		
 		setControl(control);
 	}
+	
+	@Override
+	public boolean isPageComplete() {
+		return queryLabel.get().length() > 0;
+	}
 
 	private void createDefaultGroup(Composite parent) {
-		queryLabel = new TextSearchField(parent, "Query Label: ");
+		queryLabel = new TextSearchField(parent, Strings.QUERY_LABEL);
+		// Use a key listener to update the buttons of the wizzard
+		queryLabel.textField.addKeyListener(new KeyListener() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				getContainer().updateButtons();
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+		});
 		
 		Label l = new Label(parent, SWT.SEPARATOR | SWT.SHADOW_OUT | SWT.HORIZONTAL);
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		data.horizontalSpan = 2;
 		l.setLayoutData(data);
 		
-		title = new TextSearchField(parent, "Title: ");
-		description = new TextSearchField(parent, "Description: ");
-		label = new TextSearchField(parent, "Labels: ");
-		assignee = new TextSearchField(parent, "Assignee: ");
+		title = new TextSearchField(parent, Strings.QUERY_ISSUE_TITLE);
+		description = new TextSearchField(parent, Strings.QUERY_ISSUE_DESCRIPTION);
+		label = new TextSearchField(parent, Strings.QUERY_ISSUE_LABEL);
+		assignee = new TextSearchField(parent, Strings.QUERY_ISSUE_ASSIGNEE);
 		
-		priority = new TextSearchField(parent, "Priority: ");
-		type = new TextSearchField(parent, "Type: ");
-		milestone = new TextSearchField(parent, "Milestone: ");
+		priority = new TextSearchField(parent, Strings.QUERY_ISSUE_PRIORITY);
+		type = new TextSearchField(parent, Strings.QUERY_ISSUE_TYPE);
+		milestone = new TextSearchField(parent, Strings.QUERY_ISSUE_MILESTONE);
 		
-		state = new ComboSearchField(parent, "State: ", issueStates);
+		state = new ComboSearchField(parent, Strings.QUERY_ISSUE_STATE, issueStates);
 	}
 
 	@Override

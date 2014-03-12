@@ -43,7 +43,7 @@ public class GitlabEditorPageFactory extends AbstractTaskEditorPageFactory {
 
 	@Override
 	public String getPageText() {
-		return "Gitlab Issue";
+		return Strings.GITLAB_ISSUE;
 	}
 	
 	@Override

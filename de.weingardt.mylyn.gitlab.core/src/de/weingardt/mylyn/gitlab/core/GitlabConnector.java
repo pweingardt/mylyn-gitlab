@@ -14,6 +14,7 @@
 package de.weingardt.mylyn.gitlab.core;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -27,6 +28,7 @@ import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.data.AbstractTaskDataHandler;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskDataCollector;
+import org.eclipse.mylyn.tasks.core.data.TaskMapper;
 import org.eclipse.mylyn.tasks.core.sync.ISynchronizationSession;
 import org.gitlab.api.GitlabAPI;
 import org.gitlab.api.models.GitlabIssue;
@@ -44,7 +46,7 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 
 	@Override
 	public boolean canCreateTaskFromKey(TaskRepository repository) {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -54,18 +56,24 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 
 	@Override
 	public String getLabel() {
-		return "Gitlab Connector";
+		return "Gitlab issues";
 	}
 
 	@Override
 	public String getRepositoryUrlFromTaskUrl(String arg0) {
-		return "null-repository";
+		return null;
 	}
 
 	@Override
 	public TaskData getTaskData(TaskRepository repository, String id,
 			IProgressMonitor monitor) throws CoreException {
-		return handler.getTaskData(repository, id, monitor);
+
+		try {
+			monitor.beginTask("Task Download", IProgressMonitor.UNKNOWN);
+			return handler.downloadTaskData(repository, GitlabConnector.getTicketId(id));
+		} finally {
+			monitor.done();
+		}
 	}
 
 	@Override
@@ -80,7 +88,17 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 
 	@Override
 	public boolean hasTaskChanged(TaskRepository repository, ITask task, TaskData data) {
-		return false;
+		TaskMapper mapper = new GitlabTaskMapper(data);
+		if (data.isPartial()) {
+			return mapper.hasChanges(task);
+		} else {
+			Date repositoryDate = mapper.getModificationDate();
+			Date localDate = task.getModificationDate();
+			if (repositoryDate != null && repositoryDate.equals(localDate)) {
+				return false;
+			}
+			return true;
+		}
 	}
 
 	@Override
@@ -89,6 +107,7 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 			IProgressMonitor monitor) {
 		
 		try {
+			monitor.beginTask("Tasks querying", IProgressMonitor.UNKNOWN);
 			GitlabConnection connection = ConnectionManager.get(repository);
 			GitlabAPI api = connection.api();
 			
@@ -102,10 +121,11 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 			}
 			
 			return Status.OK_STATUS;
-		} catch (CoreException | Error | IOException e) {
+		} catch (CoreException | IOException e) {
+			return new Status(Status.ERROR, GitlabPluginCore.ID_PLUGIN, "Unable to execute Query: " + e.getMessage());
+		} finally {
+			monitor.done();
 		}
-		
-		return new Status(Status.ERROR, GitlabPluginCore.ID_PLUGIN, "Unable to execute Query!");
 	}
 
 	@Override
@@ -124,6 +144,8 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 	public static void validate(TaskRepository taskRepo) throws CoreException {
 		try {
 			ConnectionManager.get(taskRepo);
+		} catch(GitlabException e) {
+			throw e;
 		} catch (Exception | Error e) {
 			throw new GitlabException("Connection not successful or repository not found!");
 		}

@@ -46,16 +46,10 @@ public class GitlabConnectorUI extends AbstractRepositoryConnectorUi {
 		wizard.addPage(new GitlabQueryPage("New Page", repository, query));
 		return wizard;
 	}
-	
-	@Override
-	public ImageDescriptor getTaskPriorityOverlay(ITask task) {
-		ImageDescriptor image = super.getTaskPriorityOverlay(task);
-		return image;
-	}
 
 	@Override
 	public ITaskRepositoryPage getSettingsPage(TaskRepository repository) {
-		return new GitlabRepositorySettingsPage(Strings.NEW_REPOSITORY, "description", repository);
+		return new GitlabRepositorySettingsPage(Strings.NEW_REPOSITORY, Strings.SETTINGS_PAGE, repository);
 	}
 
 	@Override

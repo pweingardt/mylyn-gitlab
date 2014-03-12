@@ -34,11 +34,11 @@ public class GitlabAttributeMapper extends TaskAttributeMapper {
 	
 	@Override
 	public Map<String, String> getOptions(TaskAttribute attribute) {
-		switch(attribute.getId()) {
-		case GitlabAttributeKeys.milestone:
+		if(attribute.getId().equals(GitlabAttribute.MILESTONE.getTaskKey())) {
 			return getAsMap(getMilestones());
+		} else {
+			return super.getOptions(attribute);
 		}
-		return super.getOptions(attribute);
 	}
 	
 	private GitlabConnection getConnection() throws CoreException {

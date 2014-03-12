@@ -11,6 +11,8 @@ import org.gitlab.api.models.GitlabProject;
 import org.gitlab.api.models.GitlabSession;
 
 import de.weingardt.mylyn.gitlab.core.exceptions.GitlabException;
+import de.weingardt.mylyn.gitlab.core.exceptions.GitlabExceptionHandler;
+import de.weingardt.mylyn.gitlab.core.exceptions.UnknownProjectException;
 
 public class ConnectionManager {
 	
@@ -21,10 +23,10 @@ public class ConnectionManager {
 	}
 	
 	static GitlabConnection get(TaskRepository repository, boolean forceUpdate) throws GitlabException {
-		if(connections.containsKey(repository.getUrl()) && !forceUpdate) {
-			return connections.get(repository.getUrl());
-		} else {
-			try {
+		try {
+			if(connections.containsKey(repository.getUrl()) && !forceUpdate) {
+				return connections.get(repository.getUrl());
+			} else {
 				URL url = new URL(repository.getUrl());
 				String projectPath = url.getPath().substring(1);
 				String host = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort();
@@ -32,13 +34,13 @@ public class ConnectionManager {
 				String password= repository.getCredentials(AuthenticationType.REPOSITORY).getPassword();
 				
 				GitlabSession session = GitlabAPI.connect(host, username, password);
-				
+					
 				GitlabAPI api = GitlabAPI.connect(host, session.getPrivateToken());
 				
 				if(projectPath.endsWith(".git")) {
 					projectPath = projectPath.substring(0, projectPath.length() - 4);
 				}
-				
+					
 				List<GitlabProject> projects = api.getProjects();
 				for(GitlabProject p : projects) {
 					if(p.getPathWithNamespace().equals(projectPath)) {
@@ -49,11 +51,15 @@ public class ConnectionManager {
 						return connection;
 					}
 				}
-			} catch(Exception | Error e) {
-				throw new GitlabException("Failed to connect to: " + repository.getUrl());
+				// At this point the authentication was successful, but the corresponding project
+				// could not be found!
+				throw new UnknownProjectException(projectPath);
 			}
+		} catch(GitlabException e) {
+			throw e;
+		} catch(Exception | Error e) {
+			throw GitlabExceptionHandler.handle(e);
 		}
-		throw new GitlabException("Failed to connect to: " + repository.getUrl());
 	}
 
 }
