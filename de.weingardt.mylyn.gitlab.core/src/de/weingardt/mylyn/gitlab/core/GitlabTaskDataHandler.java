@@ -59,7 +59,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		try {
 			return ConnectionManager.get(repository).mapper;
 		} catch (CoreException e) {
-			return null;
+			throw new Error(e);
 		}
 	}
 
