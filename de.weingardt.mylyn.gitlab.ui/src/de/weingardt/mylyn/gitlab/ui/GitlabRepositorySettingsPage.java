@@ -49,6 +49,12 @@ public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage
 	}
 	
 	@Override
+	public void applyTo(TaskRepository repository) {
+		repository.setCategory(TaskRepository.CATEGORY_BUGS);
+		super.applyTo(repository);
+	}
+	
+	@Override
 	protected Validator getValidator(final TaskRepository repository) {
 		return new Validator() {
 
