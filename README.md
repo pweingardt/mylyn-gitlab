@@ -23,7 +23,7 @@ The Mylyn Gitlab Connector allows you to connect Mylyn to your self hosted Gitla
 
 ## Usage
 
-1. Install the plugin obviously
+1. Install the plugin obviously (you can use the https://pweingardt.github.com/mylyn-gitlab update site)
 2. Add a new Connector, using the new Gitlab Connector
   1. enter the project URL (something like http(s)://my-gitlab-instance.org/myname/myproject)
   2. enter your usename and your password
