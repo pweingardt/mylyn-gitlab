@@ -3,5 +3,9 @@
    <feature url="features/de.weingardt.mylyn.gitlab_1.0.0.qualifier.jar" id="de.weingardt.mylyn.gitlab" version="1.0.0.qualifier">
       <category name="org.eclipse.mylyn"/>
    </feature>
-   <category-def name="org.eclipse.mylyn" label="Mylyn Connectors"/>
+   <category-def name="org.eclipse.mylyn" label="Mylyn Connectors">
+      <description>
+         Available Mylyn Connectors
+      </description>
+   </category-def>
 </site>
