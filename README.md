@@ -8,9 +8,9 @@ The Mylyn Gitlab Connector allows you to connect Mylyn to your self hosted Gitla
 
 * create, edit, close and reopen issues
 * comment on issues
-* search for issues using regular expressions
+* search for issues using milestones, assignees, issue state and regular expressions for labels
 * supports project milestones and assignees
-* supports three priorities (low, normal, high) and three types (bug, feature, story) using labels. You don't have to use this feature, but if you want to use "type:bug" and "priority:high" as labels (comma separated)
+* supports three priorities (low, normal, high) and three types (bug, feature, story) using labels. You don't have to use this feature, but if you want to use "type:bug" and "priority:high" as labels (comma separated). As of version 1.1.0 you don't need the prefixes "type:" and "priority:", just use "bug", "high".
 * handles issues on a project basis
 
 
@@ -23,20 +23,24 @@ The Mylyn Gitlab Connector allows you to connect Mylyn to your self hosted Gitla
 
 ## Usage
 
-1. Install the plugin obviously (you can use the https://pweingardt.github.com/mylyn-gitlab update site)
+1. Install the plugin obviously (you can use the http://pweingardt.github.com/mylyn-gitlab update site)
 2. Add a new Connector, using the new Gitlab Connector
   1. enter the project URL (something like http(s)://my-gitlab-instance.org/myname/myproject)
   2. enter your usename and your password
   3. **Do not forget to check the "Save Password" checkbox**. I don't know how to create a password prompt...
 3. You can now create queries and issues
 
-If you use https instead of http, be sure you have a valid certificate (that means it is signed by a trusted CA). If you don't have a valid certificate (like a self signed certificate), the plugin will not connect. If you want to add your CA certificate to the java keystore, you have to:
+If you use https instead of http (and you absolutely should use https), be sure you have a valid certificate. That means it is signed by a trusted CA. If you don't have a valid certificate (like a self signed certificate), the plugin will refuse to connect. If you want to add your CA certificate to the java keystore, you have to:
 
-1. find the keystore which is used by your JVM (on my machine it is /opt/java/jre/lib/security/cacerts)
-2. find out the password for the keystore (I think the default is "changeit")
-3. add the CA certificate to this keystore (root permissions might be necessary) with `keytool -import -alias A-UNIQUE-ALIAS -file YOUR-CA.crt -keystore cacerts`
+1. find the keystore which is used by your JVM (on my machine it is /etc/ssl/certs/java/cacerts)
+2. find out the password for the keystore (the default is "changeit")
+3. add the CA certificate to this keystore (root permissions might be necessary) with `keytool -import -alias A-UNIQUE-ALIAS -file YOUR-CA.crt -keystore $PATH_TO_YOUR_KEYSTORE`
 
 I don't want to ignore ceritificate errors (it is possible though). It is not a good way to do those kind of things.
+
+## Queries
+
+Say you want to search for open bugs and features (issues that are either features or bugs). If you add the labels "bug" and "feature" in the query settings page, the plugin will search for issues, that have *both* labels. The plugin will search for issues that are bugs, and *also* features. If you want to search for bugs *or* features, you have to use regular expressions: `(bug|feature)` will do the job.
 
 ## Known issues
 
