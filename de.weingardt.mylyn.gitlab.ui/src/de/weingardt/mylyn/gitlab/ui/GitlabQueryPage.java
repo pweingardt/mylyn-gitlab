@@ -209,7 +209,7 @@ public class GitlabQueryPage extends AbstractRepositoryQueryPage implements IWiz
 		}
 
 		Label assigneeLabel = new Label(optionsArea, SWT.NONE);
-		assigneeLabel.setText("Assignee");
+		assigneeLabel.setText(Strings.QUERY_ASSIGNEE);
 
 		assigneeText = new Text(optionsArea, SWT.BORDER | SWT.SINGLE);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(assigneeText);

@@ -24,8 +24,8 @@ public class Strings {
 	public final static String QUERY_NEW_LABEL_REGEX = "Add label regex";
 	public final static String QUERY_REMOVE_LABEL_REGEX = "Remove selected label";
 	
-	public final static String QUERY_ASSIGNEE = "Issue assignee: ";
-	public final static String QUERY_MILESTONE = "Issue milestone: ";
+	public final static String QUERY_ASSIGNEE = "Assignee: ";
+	public final static String QUERY_MILESTONE = "Milestone: ";
 	public final static String QUERY_STATE = "State: ";
 	
 	public final static String GITLAB_ISSUE = "Gitlab issue";
