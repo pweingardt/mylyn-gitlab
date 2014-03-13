@@ -47,8 +47,8 @@ import de.weingardt.mylyn.gitlab.core.exceptions.GitlabException;
 
 public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 	
-	private static Pattern priorityPattern = Pattern.compile("priority:(high|normal|low)");
-	private static Pattern typePattern = Pattern.compile("type:(bug|feature|story)");
+	private static Pattern priorityPattern = Pattern.compile("(?:priority:)?(high|normal|low)");
+	private static Pattern typePattern = Pattern.compile("(?:type:)?(bug|feature|story)");
 		
 	public GitlabTaskDataHandler() {
 	}

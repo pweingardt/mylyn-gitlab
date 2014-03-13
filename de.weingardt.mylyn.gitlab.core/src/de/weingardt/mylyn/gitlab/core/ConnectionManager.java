@@ -22,6 +22,14 @@ public class ConnectionManager {
 		return get(repository, false);
 	}
 	
+	static public GitlabConnection getSafe(TaskRepository repository) {
+		try {
+			return get(repository);
+		} catch (GitlabException e) {
+			return null;
+		}
+	}
+	
 	static GitlabConnection get(TaskRepository repository, boolean forceUpdate) throws GitlabException {
 		try {
 			if(connections.containsKey(repository.getUrl()) && !forceUpdate) {

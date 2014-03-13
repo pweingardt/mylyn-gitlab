@@ -14,79 +14,41 @@
 package de.weingardt.mylyn.gitlab.core;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.gitlab.api.models.GitlabIssue;
 
 public class GitlabIssueSearch {
-
-	private final static String priorityPatternFormat = "priority:(%s)";
-	private final static String typePatternFormat = "type:(%s)";
-	
-	
-	private Pattern titlePattern;
-	private Pattern descriptionPattern;
 	
 	private String assignee;
 	private String milestone;
-	private String state;
 	
-	private List<Pattern> labelPatterns = new ArrayList<Pattern>();
+	private Boolean opened;
+	private Boolean closed;
 	
-	private static int flags = Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE;
+	private List<Pattern> labels = new ArrayList<Pattern>();
 	
 	public GitlabIssueSearch(IRepositoryQuery query) {
-		titlePattern = Pattern.compile(query.getAttribute("title"), flags);
-		descriptionPattern = Pattern.compile(query.getAttribute("description"), flags);
-
-		if(!query.getAttribute("label").equals("")) {
-			labelPatterns.add(Pattern.compile(query.getAttribute("label"), flags));
-		}
-		
-		if(!query.getAttribute("priority").equals("")) {
-			labelPatterns.add(
-					Pattern.compile(String.format(priorityPatternFormat, query.getAttribute("priority")), 
-							flags));
-		}
-		
-		if(!query.getAttribute("type").equals("")) {
-			labelPatterns.add(
-					Pattern.compile(String.format(typePatternFormat, query.getAttribute("type")), 
-							flags));
-		}
-		
-		milestone = query.getAttribute("milestone");
 		assignee = query.getAttribute("assignee");
-		state = query.getAttribute("state");
+		milestone = query.getAttribute("milestone");
+		
+		opened = Boolean.parseBoolean(query.getAttribute("opened"));
+		closed = Boolean.parseBoolean(query.getAttribute("closed"));
+		
+		for(String label : query.getAttribute("labels").split(",")) {
+			if(label.trim().length() > 0) {
+				labels.add(Pattern.compile(label.trim()));
+			}
+		}
 	}
 	
 	public boolean doesMatch(GitlabIssue issue) {
-		if(!titlePattern.pattern().equals("") && !titlePattern.matcher(issue.getTitle()).find()) {
-			return false;
-		}
-		
-		if(!descriptionPattern.pattern().equals("") && !descriptionPattern.matcher(issue.getDescription()).find()) {
-			return false;
-		}
-		
-		Set<Pattern> matches = new HashSet<>();
-		for(Pattern p : labelPatterns) {
-			for(String label : issue.getLabels()) {
-				if(p.matcher(label).find()) {
-					matches.add(p);
-				}
-			}
-		}
-		if(matches.size() != labelPatterns.size()) {
-			return false;
-		}
-		
 		if(!assignee.equals("") && 
-				(issue.getAssignee() == null || !assignee.equals(issue.getAssignee().getUsername()))) {
+				(issue.getAssignee() == null || !(
+						assignee.equals(issue.getAssignee().getUsername()) ||
+						assignee.equals(issue.getAssignee().getName())))) {
 			return false;
 		}
 		
@@ -96,10 +58,27 @@ public class GitlabIssueSearch {
 			return false;
 		}
 		
-		if(!state.equals("") && !state.equals(issue.getState())) {
+		List<Pattern> matchedLabels = new ArrayList<>();
+		for(Pattern p : labels) {
+			for(String label : issue.getLabels()) {
+				if(p.matcher(label).find()) {
+					matchedLabels.add(p);
+				}
+			}
+		}
+		
+		if(matchedLabels.size() < labels.size()) {
 			return false;
 		}
 		
+		if(!closed && issue.getState().equals(GitlabIssue.StateClosed)) {
+			return false;
+		}
+		
+		if(!opened && issue.getState().equals(GitlabIssue.StateOpened)) {
+			return false;
+		}
+
 		return true;
 	}
 	

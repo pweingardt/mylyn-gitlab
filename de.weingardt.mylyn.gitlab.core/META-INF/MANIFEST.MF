@@ -9,7 +9,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.mylyn.tasks.core;bundle-version="[3.8.0,4.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
-Export-Package: de.weingardt.mylyn.gitlab.core
+Export-Package: de.weingardt.mylyn.gitlab.core,
+ de.weingardt.mylyn.gitlab.core.exceptions,
+ org.gitlab.api.models
 Bundle-Vendor: Weingardt Software
 Bundle-ClassPath: lib/gitlab-java.jar,
  lib/commons-io-1.4.jar,

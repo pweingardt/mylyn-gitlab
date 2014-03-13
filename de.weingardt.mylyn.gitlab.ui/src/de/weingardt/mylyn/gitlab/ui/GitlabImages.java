@@ -17,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.Image;
 
 /**
  * @author Shawn Minto
@@ -32,6 +33,8 @@ public class GitlabImages {
 	public static final ImageDescriptor OVERLAY_FEATURE = create("overlay-feature.gif"); //$NON-NLS-1$
 
 	public static final ImageDescriptor OVERLAY_STORY = create("overlay-story.gif"); //$NON-NLS-1$
+	
+	public static final Image IMAGE_LABEL = create("label.png").createImage();
 
 	private static ImageDescriptor create(String name) {
 		try {
