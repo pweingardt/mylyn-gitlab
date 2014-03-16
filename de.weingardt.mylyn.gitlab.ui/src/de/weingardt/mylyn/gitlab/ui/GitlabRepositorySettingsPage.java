@@ -33,7 +33,10 @@ public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage
 
 	@Override
 	protected void createAdditionalControls(Composite composite) {
-		
+		savePasswordButton.setSelection(true);
+		if (serverUrlCombo.getText().length() == 0) {
+			serverUrlCombo.setText("https://your-host.org/namespace/project.git");
+		}
 	}
 
 	@Override
@@ -44,7 +47,6 @@ public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage
 	@Override
 	public TaskRepository createTaskRepository() {
 		TaskRepository repo = super.createTaskRepository();
-		repo.setBugRepository(true);
 		return repo;
 	}
 	

@@ -1,5 +1,6 @@
 package de.weingardt.mylyn.gitlab.core.exceptions;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
@@ -15,6 +16,8 @@ public class GitlabExceptionHandler {
 			return new GitlabException("Connection refused");
 		} else if(e instanceof NoRouteToHostException) {
 			return new GitlabException("No route to host");
+		} else if(e instanceof FileNotFoundException) {
+			return new GitlabException("Invalid path in host");
 		} else if(e instanceof IOException) {
 			return new GitlabException("Invalid username/password combination");
 		}

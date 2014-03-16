@@ -1,8 +1,9 @@
 package de.weingardt.mylyn.gitlab.core;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.mylyn.commons.net.AuthenticationType;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
@@ -17,6 +18,7 @@ import de.weingardt.mylyn.gitlab.core.exceptions.UnknownProjectException;
 public class ConnectionManager {
 	
 	private static HashMap<String, GitlabConnection> connections = new HashMap<>();
+	private static Pattern URLPattern = Pattern.compile("((?:http|https)://(?:.*))/((?:[^\\/]*?)/(?:[^\\/]*?))$");
 	
 	static public GitlabConnection get(TaskRepository repository) throws GitlabException {
 		return get(repository, false);
@@ -35,9 +37,13 @@ public class ConnectionManager {
 			if(connections.containsKey(repository.getUrl()) && !forceUpdate) {
 				return connections.get(repository.getUrl());
 			} else {
-				URL url = new URL(repository.getUrl());
-				String projectPath = url.getPath().substring(1);
-				String host = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort();
+				Matcher matcher = URLPattern.matcher(repository.getUrl());
+				if(!matcher.find()) {
+					throw new GitlabException("Invalid Project-URL!");
+				}
+
+				String projectPath = matcher.group(2);
+				String host = matcher.group(1);
 				String username = repository.getCredentials(AuthenticationType.REPOSITORY).getUserName();
 				String password= repository.getCredentials(AuthenticationType.REPOSITORY).getPassword();
 				
