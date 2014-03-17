@@ -17,7 +17,7 @@ import de.weingardt.mylyn.gitlab.core.exceptions.UnknownProjectException;
 
 public class ConnectionManager {
 	
-	private static HashMap<String, GitlabConnection> connections = new HashMap<>();
+	private static HashMap<String, GitlabConnection> connections = new HashMap<String, GitlabConnection>();
 	private static Pattern URLPattern = Pattern.compile("((?:http|https)://(?:.*))/((?:[^\\/]*?)/(?:[^\\/]*?))$");
 	
 	static public GitlabConnection get(TaskRepository repository) throws GitlabException {
@@ -71,7 +71,9 @@ public class ConnectionManager {
 			}
 		} catch(GitlabException e) {
 			throw e;
-		} catch(Exception | Error e) {
+		} catch(Exception e) {
+			throw GitlabExceptionHandler.handle(e);
+		} catch(Error e) {
 			throw GitlabExceptionHandler.handle(e);
 		}
 	}

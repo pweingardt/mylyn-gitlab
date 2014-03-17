@@ -58,7 +58,7 @@ public class GitlabIssueSearch {
 			return false;
 		}
 		
-		List<Pattern> matchedLabels = new ArrayList<>();
+		List<Pattern> matchedLabels = new ArrayList<Pattern>();
 		for(Pattern p : labels) {
 			for(String label : issue.getLabels()) {
 				if(p.matcher(label).find()) {

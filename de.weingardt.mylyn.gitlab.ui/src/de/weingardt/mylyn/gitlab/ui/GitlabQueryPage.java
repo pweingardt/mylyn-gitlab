@@ -289,7 +289,7 @@ public class GitlabQueryPage extends AbstractRepositoryQueryPage implements IWiz
 		query.setAttribute("opened", "" + openButton.getSelection());
 		query.setAttribute("closed", "" + closedButton.getSelection());
 		
-		ArrayList<String> labels = new ArrayList<>(); 
+		ArrayList<String> labels = new ArrayList<String>(); 
 		
 		for(TableItem i : labelsViewer.getTable().getItems()) {
 			labels.add(i.getText());

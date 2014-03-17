@@ -72,7 +72,7 @@ public class GitlabAttributeMapper extends TaskAttributeMapper {
 	}
 	
 	private List<String> getMilestones() {
-		List<String> target = new ArrayList<>();
+		List<String> target = new ArrayList<String>();
 		try {			
 			List<GitlabMilestone> milestones = getConnection().getMilestones();
 			for(GitlabMilestone m : milestones) {
@@ -84,7 +84,7 @@ public class GitlabAttributeMapper extends TaskAttributeMapper {
 	}
 	
 	private HashMap<String, String> getAsMap(List<String> list) {
-		HashMap<String, String> map = new HashMap<>();
+		HashMap<String, String> map = new HashMap<String, String>();
 		map.put("", "");
 		for(String s : list) {
 			map.put(s, s);

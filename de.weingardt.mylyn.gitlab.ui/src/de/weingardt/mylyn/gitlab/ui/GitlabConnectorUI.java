@@ -59,17 +59,14 @@ public class GitlabConnectorUI extends AbstractRepositoryConnectorUi {
 	
 	@Override
 	public ImageDescriptor getTaskKindOverlay(ITask task) {
-		switch(task.getTaskKind()) {
-		case GitlabAttribute.TypeBug:
+		String kind = task.getTaskKind();
+		if(kind.equals(GitlabAttribute.TypeBug)) {
 			return GitlabImages.OVERLAY_BUG;
-			
-		case GitlabAttribute.TypeFeature:
+		} else if(kind.equals(GitlabAttribute.TypeFeature)) {
 			return GitlabImages.OVERLAY_FEATURE;
-			
-		case GitlabAttribute.TypeStory:
+		} else if(kind.equals(GitlabAttribute.TypeStory)) {
 			return GitlabImages.OVERLAY_STORY;
 		}
-
 		return super.getTaskKindOverlay(task);
 	}
 	

@@ -33,11 +33,9 @@ public enum GitlabAction {
 	public final String label;
 
 	public static GitlabAction[] getActions(GitlabIssue issue) {
-		switch(issue.getState()) {
-		case GitlabIssue.StateClosed:
+		if(issue.getState().equals(GitlabIssue.StateClosed)) {
 			return closed;
-			
-		default:
+		} else {
 			return opened;
 		}
 	}

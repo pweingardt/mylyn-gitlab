@@ -121,7 +121,9 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 			}
 			
 			return Status.OK_STATUS;
-		} catch (CoreException | IOException e) {
+		} catch (CoreException e) {
+			return new Status(Status.ERROR, GitlabPluginCore.ID_PLUGIN, "Unable to execute Query: " + e.getMessage());
+		} catch(IOException e) {
 			return new Status(Status.ERROR, GitlabPluginCore.ID_PLUGIN, "Unable to execute Query: " + e.getMessage());
 		} finally {
 			monitor.done();
@@ -146,7 +148,9 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 			ConnectionManager.get(taskRepo);
 		} catch(GitlabException e) {
 			throw e;
-		} catch (Exception | Error e) {
+		} catch (Exception e) {
+			throw new GitlabException("Connection not successful or repository not found!");
+		} catch (Error e) {
 			throw new GitlabException("Connection not successful or repository not found!");
 		}
 	}

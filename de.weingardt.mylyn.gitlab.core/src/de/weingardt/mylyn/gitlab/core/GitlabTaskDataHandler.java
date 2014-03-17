@@ -262,15 +262,11 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 	private String getPriority(String labels) {
 		Matcher m = priorityPattern.matcher(labels);
 		if(m.find()) {
-			switch(m.group(1)) {
-			case "high":
+			String p = m.group(1);
+			if(p.equals("high")) {
 				return PriorityLevel.P1.toString();
-				
-			case "low":
+			} else if(p.equals("low")) {
 				return PriorityLevel.P5.toString();
-				
-			default:
-				break;
 			}
 		}
 
