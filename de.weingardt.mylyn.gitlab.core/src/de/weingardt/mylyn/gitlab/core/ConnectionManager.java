@@ -50,8 +50,14 @@ public class ConnectionManager {
 			String username = repository.getCredentials(AuthenticationType.REPOSITORY).getUserName();
 			String password= repository.getCredentials(AuthenticationType.REPOSITORY).getPassword();
 			
-			GitlabSession session = GitlabAPI.connect(host, username, password);
-				
+			GitlabSession session = null;
+			if(repository.getProperty("usePrivateToken").equals("true")) {
+				session = new GitlabSession();
+				session.setPrivateToken(password);
+			} else {
+				session = GitlabAPI.connect(host, username, password);
+			}
+
 			GitlabAPI api = GitlabAPI.connect(host, session.getPrivateToken());
 			
 			if(projectPath.endsWith(".git")) {
