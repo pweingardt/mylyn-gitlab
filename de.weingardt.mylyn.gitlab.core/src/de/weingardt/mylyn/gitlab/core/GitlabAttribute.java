@@ -54,7 +54,7 @@ public enum GitlabAttribute {
 	MILESTONE("Milestone", "de.weingardt.gitlab.issue.milestone", 
 			TaskAttribute.TYPE_SINGLE_SELECT, GitlabFlag.ATTRIBUTE),
 	
-	IID("IID", "de.weingardt.gitlab.issue.iid", TaskAttribute.TYPE_INTEGER,
+	IID("IID", TaskAttribute.TASK_KEY, TaskAttribute.TYPE_INTEGER,
 			GitlabFlag.READ_ONLY),
 			
 	PRIORITY("Priority", TaskAttribute.PRIORITY,
