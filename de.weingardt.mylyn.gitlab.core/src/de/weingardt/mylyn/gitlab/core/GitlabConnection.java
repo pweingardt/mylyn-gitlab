@@ -14,6 +14,7 @@
 package de.weingardt.mylyn.gitlab.core;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,8 +48,18 @@ public class GitlabConnection {
 	}
 	
 	public void update() throws IOException {
+		ArrayList<GitlabProjectMember> memberList = new ArrayList<GitlabProjectMember>();
+		
 		milestones = api().getMilestones(project);
-		members = api().getProjectMembers(project);
+		memberList.addAll(api().getProjectMembers(project));
+		// This might fail sometimes, because the namespace is not an actual namespace.
+		// If the "namespace" is a user namespace, it will fail
+		try {
+			memberList.addAll(api().getNamespaceMembers(project.getNamespace()));
+		} catch(Exception e) {
+		} catch(Error e) {
+		}
+		members = Collections.unmodifiableList(memberList);
 	}
 
 	public List<GitlabMilestone> getMilestones() {

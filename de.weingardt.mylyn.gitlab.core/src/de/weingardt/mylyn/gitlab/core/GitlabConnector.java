@@ -133,13 +133,17 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 	@Override
 	public void updateRepositoryConfiguration(TaskRepository repository,
 			IProgressMonitor monitor) throws CoreException {
-		ConnectionManager.get(repository, true);
+		try {
+			monitor.beginTask("Updating repository configuration", IProgressMonitor.UNKNOWN);
+			ConnectionManager.get(repository, true);
+		} finally {
+			monitor.done();
+		}
 	}
 
 	@Override
 	public void updateTaskFromTaskData(TaskRepository repository, ITask task, TaskData data) {
 		GitlabTaskMapper mapper = new GitlabTaskMapper(data);
-		task.setCompletionDate(mapper.getCompletionDate());
 		mapper.applyTo(task);
 	}
 
@@ -149,9 +153,9 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 		} catch(GitlabException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new GitlabException("Connection not successful or repository not found!");
+			throw new GitlabException("Connection not successful or repository not found: " + e.getMessage());
 		} catch (Error e) {
-			throw new GitlabException("Connection not successful or repository not found!");
+			throw new GitlabException("Connection not successful or repository not found: " + e.getMessage() );
 		}
 	}
 	
