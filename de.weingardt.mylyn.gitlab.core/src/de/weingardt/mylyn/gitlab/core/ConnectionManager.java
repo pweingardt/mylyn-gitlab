@@ -32,42 +32,64 @@ public class ConnectionManager {
 		}
 	}
 	
+	private static String constructURL(TaskRepository repository) {
+		String username = repository.getCredentials(AuthenticationType.REPOSITORY).getUserName();
+		String password = repository.getCredentials(AuthenticationType.REPOSITORY).getPassword();
+		return repository.getUrl() + "?username=" + username + "&password=" + password;
+	}
+	
+	static GitlabConnection validate(TaskRepository repository) throws GitlabException {
+		try {
+			Matcher matcher = URLPattern.matcher(repository.getUrl());
+			if(!matcher.find()) {
+				throw new GitlabException("Invalid Project-URL!");
+			}
+	
+			String projectPath = matcher.group(2);
+			String host = matcher.group(1);
+			String username = repository.getCredentials(AuthenticationType.REPOSITORY).getUserName();
+			String password= repository.getCredentials(AuthenticationType.REPOSITORY).getPassword();
+			
+			GitlabSession session = GitlabAPI.connect(host, username, password);
+				
+			GitlabAPI api = GitlabAPI.connect(host, session.getPrivateToken());
+			
+			if(projectPath.endsWith(".git")) {
+				projectPath = projectPath.substring(0, projectPath.length() - 4);
+			}
+				
+			List<GitlabProject> projects = api.getProjects();
+			for(GitlabProject p : projects) {
+				if(p.getPathWithNamespace().equals(projectPath)) {
+					GitlabConnection connection = new GitlabConnection(host, p, session, 
+							new GitlabAttributeMapper(repository));
+					return connection;
+				}
+			}
+			// At this point the authentication was successful, but the corresponding project
+			// could not be found!
+			throw new UnknownProjectException(projectPath);
+		} catch(GitlabException e) {
+			throw e;
+		} catch(Exception e) {
+			throw GitlabExceptionHandler.handle(e);
+		} catch(Error e) {
+			throw GitlabExceptionHandler.handle(e);
+		}
+	}
+	
 	static GitlabConnection get(TaskRepository repository, boolean forceUpdate) throws GitlabException {
 		try {
-			if(connections.containsKey(repository.getUrl()) && !forceUpdate) {
-				return connections.get(repository.getUrl());
+			String hash = constructURL(repository);
+			if(connections.containsKey(hash) && !forceUpdate) {
+				return connections.get(hash);
 			} else {
-				Matcher matcher = URLPattern.matcher(repository.getUrl());
-				if(!matcher.find()) {
-					throw new GitlabException("Invalid Project-URL!");
-				}
-
-				String projectPath = matcher.group(2);
-				String host = matcher.group(1);
-				String username = repository.getCredentials(AuthenticationType.REPOSITORY).getUserName();
-				String password= repository.getCredentials(AuthenticationType.REPOSITORY).getPassword();
+				GitlabConnection connection = validate(repository);
 				
-				GitlabSession session = GitlabAPI.connect(host, username, password);
-					
-				GitlabAPI api = GitlabAPI.connect(host, session.getPrivateToken());
+				connections.put(hash, connection);
+				connection.update();
 				
-				if(projectPath.endsWith(".git")) {
-					projectPath = projectPath.substring(0, projectPath.length() - 4);
-				}
-					
-				List<GitlabProject> projects = api.getProjects();
-				for(GitlabProject p : projects) {
-					if(p.getPathWithNamespace().equals(projectPath)) {
-						GitlabConnection connection = new GitlabConnection(host, p, session, 
-								new GitlabAttributeMapper(repository));
-						connection.update();
-						connections.put(repository.getUrl(), connection);
-						return connection;
-					}
-				}
-				// At this point the authentication was successful, but the corresponding project
-				// could not be found!
-				throw new UnknownProjectException(projectPath);
+				return connection;
 			}
 		} catch(GitlabException e) {
 			throw e;
