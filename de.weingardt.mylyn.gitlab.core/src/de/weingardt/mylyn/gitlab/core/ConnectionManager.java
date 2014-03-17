@@ -35,7 +35,7 @@ public class ConnectionManager {
 	private static String constructURL(TaskRepository repository) {
 		String username = repository.getCredentials(AuthenticationType.REPOSITORY).getUserName();
 		String password = repository.getCredentials(AuthenticationType.REPOSITORY).getPassword();
-		return repository.getUrl() + "?username=" + username + "&password=" + password;
+		return repository.getUrl() + "?username=" + username + "&password=" + password.hashCode();
 	}
 	
 	static GitlabConnection validate(TaskRepository repository) throws GitlabException {
