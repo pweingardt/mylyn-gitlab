@@ -52,8 +52,7 @@ public class ConnectionManager {
 			
 			GitlabSession session = null;
 			if(repository.getProperty("usePrivateToken").equals("true")) {
-				session = new GitlabSession();
-				session.setPrivateToken(password);
+				session = GitlabAPI.connect(host,  password).getCurrentSession();
 			} else {
 				session = GitlabAPI.connect(host, username, password);
 			}
