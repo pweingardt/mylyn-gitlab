@@ -41,10 +41,7 @@ public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage
 	@Override
 	protected void createAdditionalControls(final Composite composite) {
 		savePasswordButton.setSelection(true);
-		if (serverUrlCombo.getText().length() == 0) {
-			serverUrlCombo.setText("https://your-host.org/namespace/project.git");
-		}
-		
+
 		useToken = new Button(composite, SWT.CHECK);
 		useToken.setText("Use private token instead of username/password");
 		GridDataFactory.fillDefaults().span(2, 1).applyTo(useToken);
@@ -53,24 +50,39 @@ public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage
 	
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if(useToken.getSelection()) {
-					repositoryUserNameEditor.setStringValue("");
-					repositoryUserNameEditor.getTextControl(compositeContainer).setEnabled(false);
-					repositoryUserNameEditor.setEmptyStringAllowed(true);
-					repositoryPasswordEditor.setLabelText("Private token:");					
-					compositeContainer.layout();
-				} else {
-					repositoryUserNameEditor.getTextControl(compositeContainer).setEnabled(true);
-					repositoryUserNameEditor.setEmptyStringAllowed(false);
-					repositoryPasswordEditor.setLabelText(LABEL_PASSWORD);
-					compositeContainer.layout();
-				}
+				setUsernameFieldEnabled(!useToken.getSelection());
+				getWizard().getContainer().updateButtons();
 			}
 			
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
+		
+		if (serverUrlCombo.getText().length() == 0) {
+			// This means, that there the user is *not* editing an existing repository configuration
+			serverUrlCombo.setText("https://your-host.org/namespace/project.git");
+		} else {
+			if(getRepository().getProperty("usePrivateToken").equals("true")) {
+				useToken.setSelection(true);
+				setUsernameFieldEnabled(false);
+			}
+		}
+	}
+	
+	private void setUsernameFieldEnabled(boolean enabled) {
+		if(enabled) {
+			repositoryUserNameEditor.getTextControl(compositeContainer).setEnabled(true);
+			repositoryUserNameEditor.setEmptyStringAllowed(false);
+			repositoryPasswordEditor.setLabelText(LABEL_PASSWORD);
+			compositeContainer.layout();
+		} else {
+			repositoryUserNameEditor.setStringValue("");
+			repositoryUserNameEditor.getTextControl(compositeContainer).setEnabled(false);
+			repositoryUserNameEditor.setEmptyStringAllowed(true);
+			repositoryPasswordEditor.setLabelText("Private token:");					
+			compositeContainer.layout();
+		}
 	}
 
 	@Override
@@ -97,7 +109,7 @@ public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage
 	
 	@Override
 	protected boolean isMissingCredentials() {
-		if(useToken.getSelection()) {
+		if(useToken != null && useToken.getSelection()) {
 			return repositoryPasswordEditor.getStringValue().trim().equals("");
 		} else {
 			return super.isMissingCredentials();

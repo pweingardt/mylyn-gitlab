@@ -149,7 +149,7 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 
 	public static void validate(TaskRepository taskRepo) throws CoreException {
 		try {
-			ConnectionManager.get(taskRepo);
+			ConnectionManager.validate(taskRepo);
 		} catch(GitlabException e) {
 			throw e;
 		} catch (Exception e) {
