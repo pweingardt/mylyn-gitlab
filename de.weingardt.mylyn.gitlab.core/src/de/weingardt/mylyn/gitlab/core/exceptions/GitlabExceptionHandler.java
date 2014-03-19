@@ -19,10 +19,10 @@ public class GitlabExceptionHandler {
 		} else if(e instanceof FileNotFoundException) {
 			return new GitlabException("Invalid path in host");
 		} else if(e instanceof IOException) {
-			return new GitlabException("Invalid username/password combination");
+			return new GitlabException("Invalid username/password/private token combination");
 		}
 		
-		return new GitlabException("Unknown Exception!");
+		return new GitlabException("Unknown Exception: " + e.getMessage());
 	}
 
 }
