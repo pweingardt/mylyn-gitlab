@@ -34,7 +34,9 @@ If you use https instead of http (and you absolutely should use https), be sure 
 
 1. find the keystore which is used by your JVM (on my machine it is /etc/ssl/certs/java/cacerts)
 2. find out the password for the keystore (the default is "changeit")
-3. add the CA certificate to this keystore (root permissions might be necessary) with `keytool -import -alias A-UNIQUE-ALIAS -file YOUR-CA.crt -keystore $PATH_TO_YOUR_KEYSTORE`
+3. add the CA certificate to this keystore
+  1. On Linux, Mac OS X, or Unix systems, use `keytool -import -alias A-UNIQUE-ALIAS -file YOUR-CA.crt -keystore $PATH_TO_YOUR_KEYSTORE` (root permissions may be necessary)
+  2. On Windows, in an Administrator Command Prompt use `"%PROGRAMFILES%\java\jre7\bin\keytool" -import -alias A-UNIQUE-ALIAS -file YOUR-CA.cer -keystore "%PROGRAMFILES%\Java\jre7\lib\security\cacerts"`
 
 I don't want to ignore ceritificate errors (it is possible though). It is not a good way to do those kind of things.
 
