@@ -166,7 +166,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		TaskAttribute root = data.getRoot();
 		root.getAttribute(GitlabAttribute.AUTHOR.getTaskKey()).setValue(issue.getAuthor().getName());
 		root.getAttribute(GitlabAttribute.CREATED.getTaskKey()).setValue("" + issue.getCreatedAt().getTime());
-		root.getAttribute(GitlabAttribute.BODY.getTaskKey()).setValue(issue.getDescription());
+		root.getAttribute(GitlabAttribute.BODY.getTaskKey()).setValue(issue.getDescription() == null ? "" : issue.getDescription());
 		root.getAttribute(GitlabAttribute.LABELS.getTaskKey()).setValue(labels);
 		root.getAttribute(GitlabAttribute.PROJECT.getTaskKey()).setValue(connection.project.getName());
 		root.getAttribute(GitlabAttribute.STATUS.getTaskKey()).setValue(issue.getState());
