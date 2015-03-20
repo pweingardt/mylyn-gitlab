@@ -41,6 +41,11 @@ public class GitlabEditorPageFactory extends AbstractTaskEditorPageFactory {
 	public IFormPage createPage(TaskEditor editor) {
 		return new GitlabEditorPage(editor, GitlabPluginCore.CONNECTOR_KIND);
 	}
+	
+	@Override
+	public int getPriority() {
+		return 0;
+	}
 
 	@Override
 	public Image getPageImage() {
