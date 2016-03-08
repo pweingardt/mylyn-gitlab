@@ -24,12 +24,14 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
+import de.weingardt.mylyn.gitlab.core.ConnectionManager;
 import de.weingardt.mylyn.gitlab.core.GitlabConnector;
 import de.weingardt.mylyn.gitlab.core.GitlabPluginCore;
 
 public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage {
 
 	private Button useToken;
+	private Button ignoreCertificateError;
 	
 	public GitlabRepositorySettingsPage(String title, String description,
 			TaskRepository taskRepository) {
@@ -59,6 +61,10 @@ public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage
 			}
 		});
 		
+		ignoreCertificateError = new Button(composite, SWT.CHECK);
+		ignoreCertificateError.setText("Ignore certificate errors, e.g. self signed certificates");
+		GridDataFactory.fillDefaults().span(2, 1).applyTo(ignoreCertificateError);
+
 		if (serverUrlCombo.getText().length() == 0) {
 			// This means, that there the user is *not* editing an existing repository configuration
 			serverUrlCombo.setText("https://your-host.org/namespace/project.git");
@@ -105,7 +111,14 @@ public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage
 		} else {
 			repository.setProperty("usePrivateToken", "false");
 		}
+		if(ignoreCertificateError.getSelection()) {
+			repository.setProperty(ConnectionManager.IGNORE_CERTIFICATE_ERROR_PROPERTY, "true");
+		} else {
+			repository.setProperty(ConnectionManager.IGNORE_CERTIFICATE_ERROR_PROPERTY, "false");
+		}
 	}
+	
+	
 	
 	@Override
 	protected boolean isMissingCredentials() {
