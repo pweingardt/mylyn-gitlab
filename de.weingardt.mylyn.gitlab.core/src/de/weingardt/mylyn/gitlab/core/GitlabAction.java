@@ -15,15 +15,28 @@ package de.weingardt.mylyn.gitlab.core;
 
 import org.gitlab.api.models.GitlabIssue;
 
-
+/**
+ * Represents an action that tell Gitlab what to do with
+ * the issue, e.g. "close" will close the issue in Gitlab.
+ * This wrapper is necessary.
+ *
+ * @author paul
+ *
+ */
 public enum GitlabAction {
 
 	LEAVE("leave"),
 	CLOSE("close"),
 	REOPEN("reopen");
 
+	/**
+	 * The valid actions for an open issue
+	 */
 	private final static GitlabAction[] opened = {LEAVE, CLOSE};
 
+	/**
+	 * The valid actions for a closed issue
+	 */
 	private final static GitlabAction[] closed = {LEAVE, REOPEN};
 
 	private GitlabAction(String label) {
@@ -32,6 +45,11 @@ public enum GitlabAction {
 
 	public final String label;
 
+	/**
+	 * Returns all valid actions for the given issue.
+	 * @param issue
+	 * @return
+	 */
 	public static GitlabAction[] getActions(GitlabIssue issue) {
 		if(issue.getState().equals(GitlabIssue.StateClosed)) {
 			return closed;
@@ -40,6 +58,11 @@ public enum GitlabAction {
 		}
 	}
 
+	/**
+	 * Returns the GitlabAction enum for the given action string.
+	 * @param action
+	 * @return
+	 */
 	public static GitlabAction find(String action) {
 		for(GitlabAction a : values()) {
 			if(a.label.equals(action)) {
@@ -48,15 +71,19 @@ public enum GitlabAction {
 		}
 		return LEAVE;
 	}
-	
+
+	/**
+	 * Wrapper for the GitlabAPI Issue Action enum.
+	 * @return
+	 */
 	public GitlabIssue.Action getGitlabIssueAction() {
 		switch(this) {
 		case CLOSE:
 			return GitlabIssue.Action.CLOSE;
-			
+
 		case LEAVE:
 			return GitlabIssue.Action.LEAVE;
-			
+
 		case REOPEN:
 			return GitlabIssue.Action.REOPEN;
 		}

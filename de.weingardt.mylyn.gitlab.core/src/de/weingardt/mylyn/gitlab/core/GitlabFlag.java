@@ -13,6 +13,24 @@
 
 package de.weingardt.mylyn.gitlab.core;
 
+/**
+ * A flag for Gitlab attributes.
+ * @author paul
+ *
+ */
 public enum GitlabFlag {
-	READ_ONLY, ATTRIBUTE, PEOPLE;
+	/**
+	 * Sets the attribute to ReadOnly.
+	 */
+	READ_ONLY,
+
+	/**
+	 * Default Attribute
+	 */
+	ATTRIBUTE,
+
+	/**
+	 * A flag to indicate, that an attribute describes a person.
+	 */
+	PEOPLE;
 }

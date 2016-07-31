@@ -35,10 +35,16 @@ import org.gitlab.api.models.GitlabIssue;
 
 import de.weingardt.mylyn.gitlab.core.exceptions.GitlabException;
 
+/**
+ * Establishes a connection to the Gitlab Instance and handles all requests like
+ * search requests etc.
+ * @author paul
+ *
+ */
 public class GitlabConnector extends AbstractRepositoryConnector {
-	
+
 	private GitlabTaskDataHandler handler = new GitlabTaskDataHandler();
-	
+
 	@Override
 	public boolean canCreateNewTask(TaskRepository repository) {
 		return true;
@@ -105,21 +111,21 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 	public IStatus performQuery(TaskRepository repository, IRepositoryQuery query,
 			TaskDataCollector collector, ISynchronizationSession session,
 			IProgressMonitor monitor) {
-		
+
 		try {
 			monitor.beginTask("Tasks querying", IProgressMonitor.UNKNOWN);
 			GitlabConnection connection = ConnectionManager.get(repository);
 			GitlabAPI api = connection.api();
-			
+
 			GitlabIssueSearch search = new GitlabIssueSearch(query);
 			List<GitlabIssue> issues = api.getIssues(connection.project);
-			
+
 			for(GitlabIssue i : issues) {
 				if(search.doesMatch(i)) {
 					collector.accept(handler.createTaskDataFromGitlabIssue(i, repository, api.getNotes(i)));
 				}
 			}
-			
+
 			return Status.OK_STATUS;
 		} catch (CoreException e) {
 			return new Status(Status.ERROR, GitlabPluginCore.ID_PLUGIN, "Unable to execute Query: " + e.getMessage());
@@ -158,7 +164,7 @@ public class GitlabConnector extends AbstractRepositoryConnector {
 			throw new GitlabException("Connection not successful or repository not found: " + e.getMessage() );
 		}
 	}
-	
+
 	@Override
 	public AbstractTaskDataHandler getTaskDataHandler() {
 		return handler;

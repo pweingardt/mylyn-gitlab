@@ -45,11 +45,17 @@ import org.gitlab.api.models.GitlabProjectMember;
 
 import de.weingardt.mylyn.gitlab.core.exceptions.GitlabException;
 
+/**
+ * Handles the issues. It maps the attributes from the GitlabAPI to real Mylyn issue attributes,
+ * downloads the issues for a specific task repository, and creates new issues.
+ * @author paul
+ *
+ */
 public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
-	
+
 	private static Pattern priorityPattern = Pattern.compile("(?:priority:)?(high|normal|low)");
 	private static Pattern typePattern = Pattern.compile("(?:type:)?(bug|feature|story)");
-		
+
 	public GitlabTaskDataHandler() {
 	}
 
@@ -66,7 +72,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 	public boolean initializeTaskData(TaskRepository repository, TaskData data,
 			ITaskMapping mapping, IProgressMonitor monitor) throws CoreException {
 		createDefaultAttributes(data, false);
-		
+
 		GitlabConnection connection = ConnectionManager.get(repository);
 		TaskAttribute root = data.getRoot();
 
@@ -74,7 +80,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		root.getAttribute(GitlabAttribute.LABELS.getTaskKey()).setValue("");
 		root.getAttribute(GitlabAttribute.STATUS.getTaskKey()).setValue("open");
 		root.getAttribute(GitlabAttribute.MILESTONE.getTaskKey()).setValue("");
-		
+
 		return true;
 	}
 
@@ -82,16 +88,16 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 	public RepositoryResponse postTaskData(TaskRepository repository, TaskData data,
 			Set<TaskAttribute> attributes, IProgressMonitor monitor)
 			throws CoreException {
-		
+
 		GitlabAttributeMapper attributeMapper = (GitlabAttributeMapper) data.getAttributeMapper();
-		
+
 		TaskAttribute root = data.getRoot();
 		String labels = root.getAttribute(GitlabAttribute.LABELS.getTaskKey()).getValue();
 		String title = root.getAttribute(GitlabAttribute.TITLE.getTaskKey()).getValue();
 		String body = root.getAttribute(GitlabAttribute.BODY.getTaskKey()).getValue();
-		
+
 		Integer assigneeId = 0;
-		
+
 		// We have to check, if the assignee has changed. The gitlab api leaves three posiblities for the assignee ID:
 		// 0: leave as it is
 		// -1: unassign
@@ -105,11 +111,11 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 				assigneeId = (assignee == null ? -1 : assignee.getId());
 			}
 		}
-		
+
 		GitlabMilestone milestone = attributeMapper.findMilestoneByName(
 				root.getAttribute(GitlabAttribute.MILESTONE.getTaskKey()).getValue());
 		Integer milestoneId = (milestone == null ? 0 : milestone.getId());
-		
+
 		GitlabConnection connection = ConnectionManager.get(repository);
 		GitlabAPI api = connection.api();
 
@@ -121,15 +127,15 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 				return new RepositoryResponse(ResponseKind.TASK_CREATED, "" + issue.getId());
 			} else {
 
-				if(root.getAttribute(TaskAttribute.COMMENT_NEW) != null && 
+				if(root.getAttribute(TaskAttribute.COMMENT_NEW) != null &&
 						!root.getAttribute(TaskAttribute.COMMENT_NEW).getValue().equals("")) {
-					api.createNote(connection.project.getId(), GitlabConnector.getTicketId(data.getTaskId()), 
+					api.createNote(connection.project.getId(), GitlabConnector.getTicketId(data.getTaskId()),
 							root.getAttribute(TaskAttribute.COMMENT_NEW).getValue());
 				}
-				
+
 				String action = root.getAttribute(TaskAttribute.OPERATION).getValue();
 
-				issue = api.editIssue(connection.project.getId(), GitlabConnector.getTicketId(data.getTaskId()), assigneeId, 
+				issue = api.editIssue(connection.project.getId(), GitlabConnector.getTicketId(data.getTaskId()), assigneeId,
 						milestoneId, labels, body, title, GitlabAction.find(action).getGitlabIssueAction());
 				return new RepositoryResponse(ResponseKind.TASK_UPDATED, "" + issue.getId());
 			}
@@ -137,7 +143,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 			throw new GitlabException("Unknown connection error!");
 		} finally {
 			monitor.done();
-		}		
+		}
 	}
 
 	public TaskData downloadTaskData(TaskRepository repository, Integer ticketId) throws CoreException {
@@ -152,17 +158,17 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 			throw new GitlabException("Unknown connection error!");
 		}
 	}
-	
-	public TaskData createTaskDataFromGitlabIssue(GitlabIssue issue, TaskRepository repository, 
+
+	public TaskData createTaskDataFromGitlabIssue(GitlabIssue issue, TaskRepository repository,
 			List<GitlabNote> notes) throws CoreException {
 		GitlabConnection connection = ConnectionManager.get(repository);
-		TaskData data = new TaskData(connection.mapper, GitlabPluginCore.CONNECTOR_KIND, repository.getUrl(), 
+		TaskData data = new TaskData(connection.mapper, GitlabPluginCore.CONNECTOR_KIND, repository.getUrl(),
 				"" + issue.getId());
-		
+
 		String labels = StringUtils.join(issue.getLabels(), ", ");
-		
+
 		createDefaultAttributes(data, true);
-		
+
 		TaskAttribute root = data.getRoot();
 		root.getAttribute(GitlabAttribute.AUTHOR.getTaskKey()).setValue(issue.getAuthor().getName());
 		root.getAttribute(GitlabAttribute.CREATED.getTaskKey()).setValue("" + issue.getCreatedAt().getTime());
@@ -171,34 +177,34 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		root.getAttribute(GitlabAttribute.PROJECT.getTaskKey()).setValue(connection.project.getName());
 		root.getAttribute(GitlabAttribute.STATUS.getTaskKey()).setValue(issue.getState());
 		root.getAttribute(GitlabAttribute.TITLE.getTaskKey()).setValue(issue.getTitle());
-		
+
 		root.getAttribute(GitlabAttribute.IID.getTaskKey()).setValue("" + issue.getIid());
 		root.getAttribute(GitlabAttribute.PRIORITY.getTaskKey()).setValue(getPriority(labels));
 		root.getAttribute(GitlabAttribute.TYPE.getTaskKey()).setValue(getType(labels));
-		
+
 		if(issue.getMilestone() != null) {
 			root.getAttribute(GitlabAttribute.MILESTONE.getTaskKey()).setValue(issue.getMilestone().getTitle());
 		}
-		
+
 		if(issue.getUpdatedAt() != null) {
 			root.getAttribute(GitlabAttribute.UPDATED.getTaskKey()).setValue("" + issue.getUpdatedAt().getTime());
 		}
-		
+
 		if(issue.getState().equals(GitlabIssue.StateClosed)) {
 			root.getAttribute(GitlabAttribute.COMPLETED.getTaskKey()).setValue("" + issue.getUpdatedAt().getTime());
 		}
-		
+
 		if(issue.getAssignee() != null) {
 			root.getAttribute(GitlabAttribute.ASSIGNEE.getTaskKey()).setValue(issue.getAssignee().getName());
 		}
-		
+
 		Collections.sort(notes, new Comparator<GitlabNote>() {
 			@Override
 			public int compare(GitlabNote o1, GitlabNote o2) {
 				return o1.getCreatedAt().compareTo(o2.getCreatedAt());
 			}
 		});
-		
+
 		for (int i = 0; i < notes.size(); i++) {
 			TaskCommentMapper cmapper = new TaskCommentMapper();
 			cmapper.setAuthor(repository.createPerson(notes.get(i).getAuthor().getName()));
@@ -208,17 +214,17 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 			TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_COMMENT + (i + 1));
 			cmapper.applyTo(attribute);
 		}
-		
+
 		GitlabAction[] actions = GitlabAction.getActions(issue);
 		for(int i = 0; i < actions.length; ++i) {
 			GitlabAction action = actions[i];
 			TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_OPERATION + action.label);
 			TaskOperation.applyTo(attribute, action.label, action.label);
 		}
-		
+
 		return data;
 	}
-	
+
 	private void createDefaultAttributes(TaskData data, boolean existingTask) {
 		createAttribute(data, GitlabAttribute.BODY);
 		createAttribute(data, GitlabAttribute.TITLE);
@@ -231,7 +237,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		createAttribute(data, GitlabAttribute.UPDATED);
 		createAttribute(data, GitlabAttribute.ASSIGNEE);
 		createAttribute(data, GitlabAttribute.MILESTONE);
-		
+
 		createAttribute(data, GitlabAttribute.IID);
 		createAttribute(data, GitlabAttribute.PRIORITY);
 		createAttribute(data, GitlabAttribute.TYPE);
@@ -249,7 +255,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		TaskAttribute operation = data.getRoot().createAttribute(TaskAttribute.OPERATION);
 		operation.getMetaData().setType(TaskAttribute.TYPE_OPERATION);
 	}
-	
+
 	private void createAttribute(TaskData data, GitlabAttribute attribute) {
 		TaskAttribute attr = data.getRoot().createAttribute(attribute.getTaskKey());
 		TaskAttributeMetaData metaData = attr.getMetaData();
@@ -258,7 +264,13 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		metaData.setLabel(attribute.toString());
 		metaData.setReadOnly(attribute.isReadOnly());
 	}
-	
+
+	/**
+	 * Returns the Priority String for Mylyn. Uses a regular expression to check
+	 * for priorities in the given label.
+	 * @param labels
+	 * @return
+	 */
 	private String getPriority(String labels) {
 		Matcher m = priorityPattern.matcher(labels);
 		if(m.find()) {
@@ -272,7 +284,13 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 
 		return PriorityLevel.P3.toString();
 	}
-	
+
+	/**
+	 * Returns the type string for Mylyn. Uses a regular expression to check
+	 * for types in the given label.
+	 * @param labels
+	 * @return
+	 */
 	private String getType(String labels) {
 		Matcher m = typePattern.matcher(labels);
 		if(m.find()) {
