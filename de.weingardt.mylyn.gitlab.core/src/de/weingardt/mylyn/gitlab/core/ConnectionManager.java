@@ -69,6 +69,8 @@ public class ConnectionManager {
 		String password = repository.getCredentials(AuthenticationType.REPOSITORY).getPassword();
 		return repository.getUrl() + "?username=" + username + "&password=" + password.hashCode();
 	}
+	
+	public final static String IGNORE_CERTIFICATE_ERROR_PROPERTY = "ignoreCertificateError";
 
 	/**
 	 * Validates the given task repository and returns a GitlabConnection if
@@ -88,16 +90,18 @@ public class ConnectionManager {
 			String host = matcher.group(1);
 			String username = repository.getCredentials(AuthenticationType.REPOSITORY).getUserName();
 			String password= repository.getCredentials(AuthenticationType.REPOSITORY).getPassword();
-
+			boolean ignoreCertificateErrors = repository.getProperty(IGNORE_CERTIFICATE_ERROR_PROPERTY).contentEquals("true");
 			GitlabSession session = null;
 			if(repository.getProperty("usePrivateToken") != null && repository.getProperty("usePrivateToken").equals("true")) {
-				session = GitlabAPI.connect(host,  password).getCurrentSession();
+				session = GitlabAPI.connect(host,  password).ignoreCertificateErrors(ignoreCertificateErrors).getCurrentSession();
 			} else {
-				session = GitlabAPI.connect(host, username, password);
+				String tailUrl = GitlabSession.URL;
+		    	session = GitlabAPI.connect(host, null).ignoreCertificateErrors(ignoreCertificateErrors).dispatch().
+		    			with("login", username).with("password", password).to(tailUrl, GitlabSession.class);
 			}
-
 			GitlabAPI api = GitlabAPI.connect(host, session.getPrivateToken());
-
+			api.ignoreCertificateErrors(ignoreCertificateErrors);
+			api.ignoreCertificateErrors(ignoreCertificateErrors);
 			if(projectPath.endsWith(".git")) {
 				projectPath = projectPath.substring(0, projectPath.length() - 4);
 			}
