@@ -91,17 +91,17 @@ public class ConnectionManager {
 			String username = repository.getCredentials(AuthenticationType.REPOSITORY).getUserName();
 			String password= repository.getCredentials(AuthenticationType.REPOSITORY).getPassword();
 			boolean ignoreCertificateErrors = repository.getProperty(IGNORE_CERTIFICATE_ERROR_PROPERTY).contentEquals("true");
-			
 			GitlabSession session = null;
 			if(repository.getProperty("usePrivateToken") != null && repository.getProperty("usePrivateToken").equals("true")) {
-				session = GitlabAPI.connect(host,  password).getCurrentSession();
+				session = GitlabAPI.connect(host,  password).ignoreCertificateErrors(ignoreCertificateErrors).getCurrentSession();
 			} else {
-				session = GitlabAPI.connect(host, username, password);
+				String tailUrl = GitlabSession.URL;
+		    	session = GitlabAPI.connect(host, null).ignoreCertificateErrors(ignoreCertificateErrors).dispatch().
+		    			with("login", username).with("password", password).to(tailUrl, GitlabSession.class);
 			}
-
 			GitlabAPI api = GitlabAPI.connect(host, session.getPrivateToken());
 			api.ignoreCertificateErrors(ignoreCertificateErrors);
-			
+			api.ignoreCertificateErrors(ignoreCertificateErrors);
 			if(projectPath.endsWith(".git")) {
 				projectPath = projectPath.substring(0, projectPath.length() - 4);
 			}
