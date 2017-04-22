@@ -16,7 +16,7 @@ package de.weingardt.mylyn.gitlab.ui;
 public class Strings {
 
 	public final static String NEW_REPOSITORY = "New repository";
-	public final static String SETTINGS_PAGE = "Enter the HTTPS-URL to your Gitlab repository";
+	public final static String SETTINGS_PAGE = "Enter the HTTPS-URL to your GitLab repository";
 	
 	public final static String QUERY_TITLE = "Query title: ";
 	
@@ -28,6 +28,6 @@ public class Strings {
 	public final static String QUERY_MILESTONE = "Milestone: ";
 	public final static String QUERY_STATE = "State: ";
 	
-	public final static String GITLAB_ISSUE = "Gitlab issue";
+	public final static String GITLAB_ISSUE = "GitLab issue";
 	
 }
