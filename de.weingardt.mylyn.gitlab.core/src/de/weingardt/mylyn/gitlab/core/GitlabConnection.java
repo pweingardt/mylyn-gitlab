@@ -28,28 +28,28 @@ import org.gitlab.api.models.GitlabSession;
 public class GitlabConnection {
 
 	public final String host;
-	public final GitlabSession session;
+	public final String token;
 	public final GitlabProject project;
 	public final GitlabAttributeMapper mapper;
-	
+
 	private List<GitlabMilestone> milestones;
 	private List<GitlabProjectMember> members;
-	
-	public GitlabConnection(String host, GitlabProject project, GitlabSession session,
+
+	public GitlabConnection(String host, GitlabProject project, String token,
 			GitlabAttributeMapper mapper) {
 		this.host = host;
 		this.project = project;
-		this.session = session;
+		this.token = token;
 		this.mapper = mapper;
 	}
-	
+
 	public GitlabAPI api() {
-		return GitlabAPI.connect(host, session.getPrivateToken());
+		return GitlabAPI.connect(host, token);
 	}
-	
+
 	public void update() throws IOException {
 		ArrayList<GitlabProjectMember> memberList = new ArrayList<GitlabProjectMember>();
-		
+
 		milestones = api().getMilestones(project);
 		memberList.addAll(api().getProjectMembers(project));
 		// This might fail sometimes, because the namespace is not an actual namespace.
@@ -65,9 +65,9 @@ public class GitlabConnection {
 	public List<GitlabMilestone> getMilestones() {
 		return Collections.unmodifiableList(milestones);
 	}
-	
+
 	public List<GitlabProjectMember> getProjectMembers() {
 		return Collections.unmodifiableList(members);
 	}
-	
+
 }

@@ -33,7 +33,7 @@ public class ConnectionManager {
 	/**
 	 * The pattern is used to verify a ULR to a valid Gitlab project URL.
 	 */
-	private static Pattern URLPattern = Pattern.compile("((?:http|https)://(?:.*))/((?:[^\\/]*?)/(?:[^\\/]*?))$");
+	private static Pattern URLPattern = Pattern.compile("((?:http|https)://(?:[^\\/]*))/((?:.*?)/(?:[^\\/]*?))$");
 
 	/**
 	 * Returns the GitlabConnection for the given task repository
@@ -90,13 +90,17 @@ public class ConnectionManager {
 			String password= repository.getCredentials(AuthenticationType.REPOSITORY).getPassword();
 
 			GitlabSession session = null;
+			String token = null;
+
 			if(repository.getProperty("usePrivateToken") != null && repository.getProperty("usePrivateToken").equals("true")) {
 				session = GitlabAPI.connect(host,  password).getCurrentSession();
+				token = password;
 			} else {
 				session = GitlabAPI.connect(host, username, password);
+				token = session.getPrivateToken();
 			}
 
-			GitlabAPI api = GitlabAPI.connect(host, session.getPrivateToken());
+			GitlabAPI api = GitlabAPI.connect(host, token);
 
 			if(projectPath.endsWith(".git")) {
 				projectPath = projectPath.substring(0, projectPath.length() - 4);
@@ -105,7 +109,7 @@ public class ConnectionManager {
 			List<GitlabProject> projects = api.getProjects();
 			for(GitlabProject p : projects) {
 				if(p.getPathWithNamespace().equals(projectPath)) {
-					GitlabConnection connection = new GitlabConnection(host, p, session,
+					GitlabConnection connection = new GitlabConnection(host, p, token,
 							new GitlabAttributeMapper(repository));
 					return connection;
 				}
