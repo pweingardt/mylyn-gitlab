@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Mylyn Gitlab Connector UI
 Bundle-SymbolicName: de.weingardt.mylyn.gitlab.ui;singleton:=true
-Bundle-Version: 1.5.0
+Bundle-Version: 1.6.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,

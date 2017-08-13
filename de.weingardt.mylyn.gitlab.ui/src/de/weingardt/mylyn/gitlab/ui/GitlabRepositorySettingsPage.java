@@ -23,6 +23,8 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
 import de.weingardt.mylyn.gitlab.core.GitlabConnector;
 import de.weingardt.mylyn.gitlab.core.GitlabPluginCore;
@@ -30,11 +32,13 @@ import de.weingardt.mylyn.gitlab.core.GitlabPluginCore;
 public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage {
 
 	private Button useToken;
-	
+
+	private Text gitlabBaseUrl;
+
 	public GitlabRepositorySettingsPage(String title, String description,
 			TaskRepository taskRepository) {
 		super(title, description, taskRepository);
-		
+
 		setNeedsValidateOnFinish(true);
 	}
 
@@ -47,29 +51,44 @@ public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage
 		GridDataFactory.fillDefaults().span(2, 1).applyTo(useToken);
 
 		useToken.addSelectionListener(new SelectionAdapter() {
-	
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				setUsernameFieldEnabled(!useToken.getSelection());
 				getWizard().getContainer().updateButtons();
 			}
-			
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-		
+
+		Label l = new Label(composite, SWT.NONE);
+		l.setText("Gitlab base URL");
+
+		gitlabBaseUrl = new Text(composite, SWT.SINGLE | SWT.BORDER);
+		GridDataFactory.fillDefaults().span(1, 1).applyTo(gitlabBaseUrl);
+
+		/**
+		 * Set widget texts and check boxes if necessary.
+		 */
 		if (serverUrlCombo.getText().length() == 0) {
 			// This means, that there the user is *not* editing an existing repository configuration
 			serverUrlCombo.setText("https://your-host.org/namespace/project.git");
-		} else {
-			if(getRepository().getProperty("usePrivateToken").equals("true")) {
+		}
+
+		if(getRepository() != null) {
+			if("true".equals(getRepository().getProperty("usePrivateToken"))) {
 				useToken.setSelection(true);
 				setUsernameFieldEnabled(false);
 			}
+
+			if(getRepository().getProperty("gitlabBaseUrl") != null) {
+				gitlabBaseUrl.setText(getRepository().getProperty("gitlabBaseUrl"));
+			}
 		}
 	}
-	
+
 	private void setUsernameFieldEnabled(boolean enabled) {
 		if(enabled) {
 			repositoryUserNameEditor.getTextControl(compositeContainer).setEnabled(true);
@@ -80,7 +99,7 @@ public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage
 			repositoryUserNameEditor.setStringValue("");
 			repositoryUserNameEditor.getTextControl(compositeContainer).setEnabled(false);
 			repositoryUserNameEditor.setEmptyStringAllowed(true);
-			repositoryPasswordEditor.setLabelText("Private token:");					
+			repositoryPasswordEditor.setLabelText("Private token:");
 			compositeContainer.layout();
 		}
 	}
@@ -95,7 +114,7 @@ public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage
 		TaskRepository repo = super.createTaskRepository();
 		return repo;
 	}
-	
+
 	@Override
 	public void applyTo(TaskRepository repository) {
 		repository.setCategory(TaskRepository.CATEGORY_BUGS);
@@ -105,8 +124,11 @@ public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage
 		} else {
 			repository.setProperty("usePrivateToken", "false");
 		}
+
+		repository.setProperty("gitlabBaseUrl", gitlabBaseUrl.getText());
+
 	}
-	
+
 	@Override
 	protected boolean isMissingCredentials() {
 		if(useToken != null && useToken.getSelection()) {
@@ -115,7 +137,7 @@ public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage
 			return super.isMissingCredentials();
 		}
 	}
-	
+
 	@Override
 	protected Validator getValidator(final TaskRepository repository) {
 		return new Validator() {
@@ -124,7 +146,7 @@ public class GitlabRepositorySettingsPage extends AbstractRepositorySettingsPage
 			public void run(IProgressMonitor monitor) throws CoreException {
 				GitlabConnector.validate(repository);
 			}
-			
+
 		};
 	}
 

@@ -79,13 +79,29 @@ public class ConnectionManager {
 	 */
 	static GitlabConnection validate(TaskRepository repository) throws GitlabException {
 		try {
-			Matcher matcher = URLPattern.matcher(repository.getUrl());
-			if(!matcher.find()) {
-				throw new GitlabException("Invalid Project-URL!");
+			String projectPath = null;
+			String host = null;
+
+			if(repository.getProperty("gitlabBaseUrl").trim().length() > 0) {
+				host = repository.getProperty("gitlabBaseUrl").trim();
+				if(!repository.getUrl().startsWith(host)) {
+					throw new GitlabException("Invalid project URL!");
+				}
+
+				projectPath = repository.getUrl().replaceFirst(Matcher.quoteReplacement(host), "");
+				if(projectPath.startsWith("/")) {
+					projectPath = projectPath.substring(1);
+				}
+			} else {
+				Matcher matcher = URLPattern.matcher(repository.getUrl());
+				if(!matcher.find()) {
+					throw new GitlabException("Invalid Project-URL!");
+				}
+
+				projectPath = matcher.group(2);
+				host = matcher.group(1);
 			}
 
-			String projectPath = matcher.group(2);
-			String host = matcher.group(1);
 			String username = repository.getCredentials(AuthenticationType.REPOSITORY).getUserName();
 			String password= repository.getCredentials(AuthenticationType.REPOSITORY).getPassword();
 
