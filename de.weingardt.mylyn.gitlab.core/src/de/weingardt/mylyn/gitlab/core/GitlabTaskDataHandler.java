@@ -190,7 +190,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 			root.getAttribute(GitlabAttribute.UPDATED.getTaskKey()).setValue("" + issue.getUpdatedAt().getTime());
 		}
 
-		if(issue.getState().equals(GitlabIssue.StateClosed)) {
+		if(issue.getState().equals(GitlabIssue.STATE_CLOSED)) {
 			root.getAttribute(GitlabAttribute.COMPLETED.getTaskKey()).setValue("" + issue.getUpdatedAt().getTime());
 		}
 

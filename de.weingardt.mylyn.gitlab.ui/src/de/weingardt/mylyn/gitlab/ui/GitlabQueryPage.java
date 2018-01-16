@@ -187,12 +187,12 @@ public class GitlabQueryPage extends AbstractRepositoryQueryPage implements IWiz
 
 		openButton = new Button(statusArea, SWT.CHECK);
 		openButton.setSelection(true);
-		openButton.setText(GitlabIssue.StateOpened);
+		openButton.setText(GitlabIssue.STATE_OPENED);
 		openButton.addSelectionListener(completeListener);
 
 		closedButton = new Button(statusArea, SWT.CHECK);
 		closedButton.setSelection(true);
-		closedButton.setText(GitlabIssue.StateClosed);
+		closedButton.setText(GitlabIssue.STATE_CLOSED);
 		closedButton.addSelectionListener(completeListener);
 
 		Label milestonesLabel = new Label(optionsArea, SWT.NONE);

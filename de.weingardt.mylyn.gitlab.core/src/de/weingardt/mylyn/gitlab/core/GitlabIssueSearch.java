@@ -71,11 +71,11 @@ public class GitlabIssueSearch {
 			return false;
 		}
 		
-		if(!closed && issue.getState().equals(GitlabIssue.StateClosed)) {
+		if(!closed && issue.getState().equals(GitlabIssue.STATE_CLOSED)) {
 			return false;
 		}
 		
-		if(!opened && issue.getState().equals(GitlabIssue.StateOpened)) {
+		if(!opened && issue.getState().equals(GitlabIssue.STATE_OPENED)) {
 			return false;
 		}
 
