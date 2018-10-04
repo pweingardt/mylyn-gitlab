@@ -3,6 +3,10 @@
 
 The Mylyn GitLab Connector allows you to connect Mylyn to your self hosted GitLab instance in order to manage your issues on Gitlab with your local Eclipse instance.
 
+## Current Status
+
+Currenty the plugin does not work with the Gitlab V4 API. I will update the project as soon as possible, hopefully next weekend.
+
 
 ## Features
 
