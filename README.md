@@ -5,7 +5,7 @@ The Mylyn GitLab Connector allows you to connect Mylyn to your self hosted GitLa
 
 ## Current Status
 
-Currenty the plugin does not work with the Gitlab V4 API. I will update the project as soon as possible, hopefully next weekend.
+**Currenty the plugin does not work with the Gitlab V4 API. I will update the project as soon as possible, hopefully next weekend.**
 
 
 ## Features
