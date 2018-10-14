@@ -2,7 +2,7 @@
 <feature
       id="de.weingardt.mylyn.gitlab"
       label="Mylyn Gitlab Connector"
-      version="2.0.0"
+      version="2.1.0"
       provider-name="Weingardt Software">
 
    <description>
@@ -23,14 +23,14 @@ All rights reserved. This program and the accompanying materials are made availa
          id="de.weingardt.mylyn.gitlab.core"
          download-size="0"
          install-size="0"
-         version="2.0.0"
+         version="2.1.0"
          unpack="false"/>
 
    <plugin
          id="de.weingardt.mylyn.gitlab.ui"
          download-size="0"
          install-size="0"
-         version="2.0.0"
+         version="2.1.0"
          unpack="false"/>
 
 </feature>
