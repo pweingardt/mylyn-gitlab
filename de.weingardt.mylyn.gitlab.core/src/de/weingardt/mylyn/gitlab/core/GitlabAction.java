@@ -51,7 +51,7 @@ public enum GitlabAction {
 	 * @return
 	 */
 	public static GitlabAction[] getActions(GitlabIssue issue) {
-		if(issue.getState().equals(GitlabIssue.StateClosed)) {
+		if(issue.getState().equals(GitlabIssue.STATE_CLOSED)) {
 			return closed;
 		} else {
 			return opened;

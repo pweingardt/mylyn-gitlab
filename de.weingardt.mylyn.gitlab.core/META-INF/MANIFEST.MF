@@ -2,20 +2,22 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Mylyn Gitlab Connector Core
 Bundle-SymbolicName: de.weingardt.mylyn.gitlab.core;singleton:=true
-Bundle-Version: 1.6.0
+Bundle-Version: 2.0.0
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.mylyn.commons.core;bundle-version="[3.8.0,4.0.0)",
  org.eclipse.mylyn.commons.net;bundle-version="[3.8.0,4.0.0)",
- org.eclipse.mylyn.tasks.core;bundle-version="[3.8.0,4.0.0)"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+ org.eclipse.mylyn.tasks.core;bundle-version="[3.8.0,4.0.0)",
+ org.slf4j.api;bundle-version="1.7.2"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: de.weingardt.mylyn.gitlab.core,
  de.weingardt.mylyn.gitlab.core.exceptions,
  org.gitlab.api.models
 Bundle-Vendor: Weingardt Software
 Bundle-ClassPath: lib/gitlab-java.jar,
- lib/commons-io-1.4.jar,
- lib/jackson-core-asl-1.9.9.jar,
- lib/jackson-mapper-asl-1.9.9.jar,
+ lib/commons-io-2.4.jar,
+ lib/jackson-annotations-2.5.3.jar,
+ lib/jackson-core-2.5.3.jar,
+ lib/jackson-databind-2.5.3.jar,
  .
 Bundle-Activator: de.weingardt.mylyn.gitlab.core.GitlabPluginCore

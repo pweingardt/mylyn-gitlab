@@ -124,7 +124,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 			GitlabIssue issue = null;
 			if(data.isNew()) {
 				issue = api.createIssue(connection.project.getId(), assigneeId, milestoneId, labels, body, title);
-				return new RepositoryResponse(ResponseKind.TASK_CREATED, "" + issue.getId());
+				return new RepositoryResponse(ResponseKind.TASK_CREATED, "" + issue.getIid());
 			} else {
 
 				if(root.getAttribute(TaskAttribute.COMMENT_NEW) != null &&
@@ -137,7 +137,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 
 				issue = api.editIssue(connection.project.getId(), GitlabConnector.getTicketId(data.getTaskId()), assigneeId,
 						milestoneId, labels, body, title, GitlabAction.find(action).getGitlabIssueAction());
-				return new RepositoryResponse(ResponseKind.TASK_UPDATED, "" + issue.getId());
+				return new RepositoryResponse(ResponseKind.TASK_UPDATED, "" + issue.getIid());
 			}
 		} catch (IOException e) {
 			throw new GitlabException("Unknown connection error!");
@@ -163,7 +163,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 			List<GitlabNote> notes) throws CoreException {
 		GitlabConnection connection = ConnectionManager.get(repository);
 		TaskData data = new TaskData(connection.mapper, GitlabPluginCore.CONNECTOR_KIND, repository.getUrl(),
-				"" + issue.getId());
+				"" + issue.getIid());
 
 		String labels = StringUtils.join(issue.getLabels(), ", ");
 
@@ -190,7 +190,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 			root.getAttribute(GitlabAttribute.UPDATED.getTaskKey()).setValue("" + issue.getUpdatedAt().getTime());
 		}
 
-		if(issue.getState().equals(GitlabIssue.StateClosed)) {
+		if(issue.getState().equals(GitlabIssue.STATE_CLOSED)) {
 			root.getAttribute(GitlabAttribute.COMPLETED.getTaskKey()).setValue("" + issue.getUpdatedAt().getTime());
 		}
 
