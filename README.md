@@ -3,9 +3,10 @@
 
 The Mylyn GitLab Connector allows you to connect Mylyn to your self hosted GitLab instance in order to manage your issues on Gitlab with your local Eclipse instance.
 
-## Current Status
+## Changes
 
-**Currenty the plugin does not work with the Gitlab V4 API. I will update the project as soon as possible, hopefully next weekend.**
+**The new version 2.1.0 works with the Gitlab API v4, but you must recreate the repository in Mylyn, otherwise the issues can not be syncronized due to the changes
+in the Gitlab API v4.**
 
 
 ## Features
@@ -50,6 +51,7 @@ Say you want to search for open bugs and features (issues that are either featur
 
 ## Known issues
 
-* If you created a new milestone or added a new project member via the web interface, you have to update the repository configuration, so that the connector reloads the project members and milestones. Right click on the GitLab repository in the Task repositories view and click on "Update Repository Configuration". 
+* If you created a new milestone or added a new project member via the web interface, you have to update the repository configuration, so that the connector reloads the project members and milestones. Right click on the GitLab repository in the Task repositories view and click on "Update Repository Configuration".
 * Offline mode does not work.
-* Maven generally. This is my first project using Maven, so it might not work on a different machine
+* Version 1.x of this plugin is not compatible with version 2.x due to changes in the Gitlab API.
+
