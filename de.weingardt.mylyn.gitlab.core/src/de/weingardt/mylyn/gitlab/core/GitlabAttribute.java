@@ -61,7 +61,10 @@ public enum GitlabAttribute {
 			TaskAttribute.TYPE_SHORT_TEXT, GitlabFlag.READ_ONLY), 
 			
 	TYPE("Type", TaskAttribute.TASK_KIND,
-			TaskAttribute.TYPE_SHORT_TEXT, GitlabFlag.READ_ONLY);
+			TaskAttribute.TYPE_SHORT_TEXT, GitlabFlag.READ_ONLY),
+	
+	URL("Url", TaskAttribute.TASK_URL,
+			TaskAttribute.TYPE_URL, GitlabFlag.READ_ONLY);
 
 	public static final String TypeBug = "bug";
 	public static final String TypeFeature = "feature";

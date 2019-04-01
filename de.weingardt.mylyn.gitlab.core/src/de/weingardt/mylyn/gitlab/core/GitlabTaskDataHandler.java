@@ -55,6 +55,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 
 	private static Pattern priorityPattern = Pattern.compile("(?:priority:)?(high|normal|low)");
 	private static Pattern typePattern = Pattern.compile("(?:type:)?(bug|feature|story)");
+	private static String gitlabIssueUrlFormat = "%s/issues/%s";
 
 	public GitlabTaskDataHandler() {
 	}
@@ -181,6 +182,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		root.getAttribute(GitlabAttribute.IID.getTaskKey()).setValue("" + issue.getIid());
 		root.getAttribute(GitlabAttribute.PRIORITY.getTaskKey()).setValue(getPriority(labels));
 		root.getAttribute(GitlabAttribute.TYPE.getTaskKey()).setValue(getType(labels));
+		root.getAttribute(GitlabAttribute.URL.getTaskKey()).setValue(getIssueUrl(repository, issue.getId()));
 
 		if(issue.getMilestone() != null) {
 			root.getAttribute(GitlabAttribute.MILESTONE.getTaskKey()).setValue(issue.getMilestone().getTitle());
@@ -241,6 +243,7 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		createAttribute(data, GitlabAttribute.IID);
 		createAttribute(data, GitlabAttribute.PRIORITY);
 		createAttribute(data, GitlabAttribute.TYPE);
+		createAttribute(data, GitlabAttribute.URL);
 
 		data.getRoot().getAttribute(GitlabAttribute.CREATED.getTaskKey()).setValue("" + (new Date().getTime()));
 
@@ -298,6 +301,16 @@ public class GitlabTaskDataHandler extends AbstractTaskDataHandler {
 		}
 
 		return "";
+	}
+	
+	/**
+	 * Returns the issue url string for Mylyn. Uses a regular expression to check
+	 * for types in the given label.
+	 * @param labels
+	 * @return
+	 */
+	private String getIssueUrl(TaskRepository repository, int id) {
+		return String.format(gitlabIssueUrlFormat, repository.getRepositoryUrl(), id);
 	}
 
 }
