@@ -122,7 +122,7 @@ public class ConnectionManager {
 				projectPath = projectPath.substring(0, projectPath.length() - 4);
 			}
 
-			List<GitlabProject> projects = api.getProjects();
+			List<GitlabProject> projects = api.getMembershipProjects();
 			for(GitlabProject p : projects) {
 				if(p.getPathWithNamespace().equals(projectPath)) {
 					GitlabConnection connection = new GitlabConnection(host, p, token,
