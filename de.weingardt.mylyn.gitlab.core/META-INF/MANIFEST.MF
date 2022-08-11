@@ -18,6 +18,7 @@ Bundle-ClassPath: lib/commons-io-2.4.jar,
  lib/jackson-annotations-2.5.3.jar,
  lib/jackson-core-2.5.3.jar,
  lib/jackson-databind-2.5.3.jar,
- lib/java-gitlab-api-4.1.1-SNAPSHOT.jar,
+ lib/jackson-datatype-jsr310-2.5.3.jar,
+ lib/java-gitlab-api-4.1.1.jar,
  .
 Bundle-Activator: de.weingardt.mylyn.gitlab.core.GitlabPluginCore
